@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHISHA CAFE HALL | 会員ページ</title>
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --card: #171717;
+      --line: rgba(212, 175, 55, 0.25);
+      --gold: #d4af37;
+      --gold-2: #f4dc8a;
+      --text: #ffffff;
+      --muted: #b8b8b8;
+      --danger: #d75d5d;
+      --success: #67c277;
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top, rgba(212,175,55,.12), transparent 24%),
+        linear-gradient(180deg, #121212 0%, #090909 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      min-height: 100%;
+    }
+
+    body { padding: 20px 16px 80px; }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: .08em;
+      color: var(--gold-2);
+      font-weight: 600;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      color: var(--gold-2);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(212,175,55,.08);
+    }
+
+    .card {
+      background:
+        linear-gradient(180deg, rgba(212,175,55,.10), rgba(212,175,55,0) 26%),
+        linear-gradient(180deg, #1a1a1a 0%, #101010 100%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -60px auto;
+      width: 160px;
+      height: 160px;
+      background: radial-gradient(circle, rgba(212,175,55,.18), rgba(212,175,55,0) 68%);
+      pointer-events: none;
+    }
+
+    .member-card h2 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .member-rank {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      color: var(--gold-2);
+      font-size: 14px;
+      letter-spacing: .08em;
+      margin-bottom: 18px;
+      font-weight: 700;
+    }
+
+    .hero-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .points {
+      font-size: 42px;
+      font-weight: 800;
+      line-height: 1;
+      margin: 0;
+    }
+
+    .points small {
+      font-size: 18px;
+      color: var(--gold-2);
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .progress-shell {
+      margin-top: 16px;
+      background: rgba(255,255,255,.06);
+      border-radius: 999px;
+      overflow: hidden;
+      height: 12px;
+      border: 1px solid rgba(255,255,255,.04);
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-2));
+      transition: width .35s ease;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 15px;
+      color: var(--gold-2);
+      letter-spacing: .06em;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .quick-btn, .action-btn {
+      border: 1px solid var(--line);
+      background: rgba(212,175,55,.06);
+      color: var(--text);
+      padding: 14px;
+      border-radius: 16px;
+      text-align: left;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .quick-btn small, .action-btn small { display:block; color: var(--muted); font-weight: 500; margin-top: 6px; }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+
+    .row:last-child { border-bottom: 0; }
+
+    .coupon {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.02);
+      margin-bottom: 10px;
+    }
+
+    .coupon h4 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: var(--gold-2);
+    }
+
+    .coupon p { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
+
+    .coupon .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+      color: var(--gold-2);
+      background: rgba(212,175,55,.06);
+    }
+
+    .gold-btn {
+      border: 0;
+      background: linear-gradient(90deg, var(--gold), var(--gold-2));
+      color: #111;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .muted-btn {
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: not-allowed;
+    }
+
+    .hidden { display: none !important; }
+
+    .tabs {
+      position: sticky;
+      bottom: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      max-width: 430px;
+      margin: 18px auto 0;
+      padding: 12px;
+      backdrop-filter: blur(12px);
+      background: rgba(10,10,10,.72);
+      border: 1px solid rgba(255,255,255,.05);
+      border-radius: 18px;
+    }
+
+    .tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      border-radius: 14px;
+      padding: 10px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      color: var(--gold-2);
+      border-color: var(--line);
+      background: rgba(212,175,55,.08);
+    }
+
+    .register input {
+      width: 100%;
+      background: #121212;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding: 14px;
+      margin: 10px 0 14px;
+      font-size: 16px;
+    }
+
+    .status-box {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(212,175,55,.05);
+      margin-top: 12px;
+    }
+
+    .vip-state {
+      display: inline-flex;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .vip-none { background: rgba(255,255,255,.08); color: var(--muted); }
+    .vip-candidate { background: rgba(212,175,55,.14); color: var(--gold-2); }
+    .vip-approved { background: rgba(103,194,119,.18); color: var(--success); }
+
+    .error { color: #ff9c9c; font-size: 13px; }
+    .success { color: #b6f1c0; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="brand">
+      <h1>SHISHA CAFE HALL</h1>
+      <div class="badge" id="lineUserBadge">LINE ID: demo</div>
+    </div>
+
+    <section id="view-register" class="card register hidden">
+      <h3 class="section-title">会員登録</h3>
+      <div class="meta">LINEから来たお客様向けの会員ページです。</div>
+      <input id="register-name" placeholder="お名前を入力" />
+      <button class="gold-btn" id="register-btn">登録する</button>
+      <div id="register-msg" class="meta" style="margin-top:10px"></div>
+    </section>
+
+    <section id="view-home">
+      <div class="card member-card">
+        <div class="meta">会員証</div>
+        <div class="hero-row">
+          <div>
+            <h2 id="member-name">TARO YAMADA</h2>
+            <div class="member-rank"><span id="member-rank">GOLD</span><span id="vip-badge" class="pill hidden">VIP</span></div>
+            <p class="points"><span id="member-points">180</span><small>pt</small></p>
+          </div>
+          <div class="pill" id="next-rank-pill">NEXT DIAMOND</div>
+        </div>
+        <div class="meta" id="next-rank-text">次のランクまであと 7回</div>
+        <div class="progress-shell"><div id="rank-progress" class="progress-bar"></div></div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">メニュー</h3>
+        <div class="quick-grid">
+          <button class="quick-btn" data-tab-target="vip">VIP進捗<small>来店回数・累計利用額</small></button>
+          <button class="quick-btn" data-tab-target="coupons">クーポン<small>利用可能クーポン一覧</small></button>
+          <button class="quick-btn" data-tab-target="history">来店履歴<small>直近30件</small></button>
+          <button class="quick-btn" data-tab-target="profile">プロフィール<small>会員情報の確認</small></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-vip" class="hidden">
+      <div class="card">
+        <h3 class="section-title">VIP MEMBER</h3>
+        <span id="vip-status-pill" class="vip-state vip-none">未達成</span>
+        <div class="status-box">
+          <div class="row"><strong>来店回数</strong><span id="vip-visits">0 / 30回</span></div>
+          <div class="row"><strong>累計利用額</strong><span id="vip-total">¥0 / ¥200,000</span></div>
+          <div class="row"><strong>現在状態</strong><span id="vip-state-text">条件達成前</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-coupons" class="hidden">
+      <div class="card">
+        <h3 class="section-title">クーポン一覧</h3>
+        <div id="coupon-list"></div>
+      </div>
+    </section>
+
+    <section id="view-history" class="hidden">
+      <div class="card">
+        <h3 class="section-title">来店履歴</h3>
+        <div id="visit-list"></div>
+      </div>
+    </section>
+
+    <section id="view-profile" class="hidden">
+      <div class="card">
+        <h3 class="section-title">プロフィール</h3>
+        <div class="row"><strong>お名前</strong><span id="profile-name">-</span></div>
+        <div class="row"><strong>LINEユーザーID</strong><span id="profile-line-id">-</span></div>
+        <div class="row"><strong>総来店数</strong><span id="profile-visits">-</span></div>
+        <div class="row"><strong>累計利用額</strong><span id="profile-total">-</span></div>
+        <div class="row"><strong>登録日</strong><span id="profile-date">-</span></div>
+      </div>
+    </section>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="home">ホーム</button>
+    <button class="tab" data-tab="vip">VIP</button>
+    <button class="tab" data-tab="coupons">クーポン</button>
+    <button class="tab" data-tab="history">履歴</button>
+  </nav>
+
+  <script>
+    const API_BASE = localStorage.getItem('hall_api_base') || 'https://hall-loyalty-api.hallshisha.workers.dev';
+    const urlParams = new URLSearchParams(location.search);
+    const lineUserId = urlParams.get('lineUserId') || localStorage.getItem('hall_line_user_id') || 'U_DEMO_001';
+    localStorage.setItem('hall_line_user_id', lineUserId);
+    document.getElementById('lineUserBadge').textContent = `LINE ID: ${lineUserId}`;
+
+    const views = {
+      home: document.getElementById('view-home'),
+      vip: document.getElementById('view-vip'),
+      coupons: document.getElementById('view-coupons'),
+      history: document.getElementById('view-history'),
+      profile: document.getElementById('view-profile'),
+    };
+
+    let member = null;
+    let coupons = [];
+    let visits = [];
+
+    const numberYen = (n) => `¥${Number(n || 0).toLocaleString('ja-JP')}`;
+    const safe = (v) => v == null || v === '' ? '-' : v;
+
+    function rankThresholds(rank) {
+      const map = {
+        SMOKE: { currentMin: 0, nextAt: 3, nextLabel: 'BRONZE' },
+        BRONZE: { currentMin: 3, nextAt: 8, nextLabel: 'SILVER' },
+        SILVER: { currentMin: 8, nextAt: 15, nextLabel: 'GOLD' },
+        GOLD: { currentMin: 15, nextAt: 25, nextLabel: 'DIAMOND' },
+        DIAMOND: { currentMin: 25, nextAt: 30, nextLabel: 'VIP候補' },
+      };
+      return map[rank] || map.SMOKE;
+    }
+
+    function switchTab(tab) {
+      Object.entries(views).forEach(([key, el]) => el.classList.toggle('hidden', key !== tab));
+      document.querySelectorAll('.tab').forEach((btn) => btn.classList.toggle('active', btn.dataset.tab === tab));
+    }
+
+    async function fetchPublicMember() {
+      const res = await fetch(`${API_BASE}/api/public/member?lineUserId=${encodeURIComponent(lineUserId)}`);
+      const data = await res.json();
+      if (!data.member) {
+        document.getElementById('view-register').classList.remove('hidden');
+        document.getElementById('view-home').classList.add('hidden');
+        document.getElementById('view-vip').classList.add('hidden');
+        document.getElementById('view-coupons').classList.add('hidden');
+        document.getElementById('view-history').classList.add('hidden');
+        document.getElementById('view-profile').classList.add('hidden');
+        return;
+      }
+      document.getElementById('view-register').classList.add('hidden');
+      member = data.member;
+      coupons = data.coupons || [];
+      visits = data.visits || [];
+      render();
+      switchTab('home');
+    }
+
+    function render() {
+      if (!member) return;
+      const thresholds = rankThresholds(member.rank);
+      const current = Number(member.total_visits || 0);
+      const progressRange = Math.max(1, thresholds.nextAt - thresholds.currentMin);
+      const progressValue = Math.min(progressRange, Math.max(0, current - thresholds.currentMin));
+      const progress = Math.min(100, Math.round(progressValue / progressRange * 100));
+
+      document.getElementById('member-name').textContent = member.name;
+      document.getElementById('member-rank').textContent = member.rank;
+      document.getElementById('member-points').textContent = member.total_points;
+      document.getElementById('rank-progress').style.width = `${progress}%`;
+      document.getElementById('next-rank-pill').textContent = member.vip_status === 'approved' ? 'VIP MEMBER' : `NEXT ${thresholds.nextLabel}`;
+      document.getElementById('next-rank-text').textContent = member.vip_status === 'approved'
+        ? 'VIP会員です'
+        : `次のランクまであと ${Math.max(0, thresholds.nextAt - current)}回`;
+
+      const vipBadge = document.getElementById('vip-badge');
+      vipBadge.classList.toggle('hidden', member.vip_status !== 'approved');
+
+      const vipPill = document.getElementById('vip-status-pill');
+      const vipStateText = document.getElementById('vip-state-text');
+      const stateMap = {
+        none: ['未達成', 'vip-none', '条件達成前'],
+        candidate: ['審査中', 'vip-candidate', 'VIP会員審査中'],
+        approved: ['VIP', 'vip-approved', 'VIP承認済み'],
+      };
+      const [label, cls, detail] = stateMap[member.vip_status] || stateMap.none;
+      vipPill.className = `vip-state ${cls}`;
+      vipPill.textContent = label;
+      vipStateText.textContent = detail;
+      document.getElementById('vip-visits').textContent = `${member.total_visits} / 30回`;
+      document.getElementById('vip-total').textContent = `${numberYen(member.total_spent)} / ¥200,000`;
+
+      document.getElementById('profile-name').textContent = member.name;
+      document.getElementById('profile-line-id').textContent = member.line_user_id;
+      document.getElementById('profile-visits').textContent = `${member.total_visits}回`;
+      document.getElementById('profile-total').textContent = numberYen(member.total_spent);
+      document.getElementById('profile-date').textContent = safe(member.created_at);
+
+      const couponList = document.getElementById('coupon-list');
+      couponList.innerHTML = coupons.length ? '' : '<div class="meta">現在利用可能なクーポンはありません。</div>';
+      coupons.forEach((coupon) => {
+        const card = document.createElement('div');
+        card.className = 'coupon';
+        card.innerHTML = `
+          <h4>${coupon.title}</h4>
+          <p>${safe(coupon.description)}</p>
+          <div class="footer">
+            <span class="pill">期限 ${safe(coupon.expires_at)}</span>
+            <button class="${coupon.is_active ? 'gold-btn' : 'muted-btn'}" ${coupon.is_active ? '' : 'disabled'}>
+              ${coupon.is_active ? '店舗で使用' : '使用済み'}
+            </button>
+          </div>
+        `;
+        couponList.appendChild(card);
+      });
+
+      const visitList = document.getElementById('visit-list');
+      visitList.innerHTML = visits.length ? '' : '<div class="meta">来店履歴がありません。</div>';
+      visits.forEach((visit) => {
+        const row = document.createElement('div');
+        row.className = 'row';
+        row.innerHTML = `<div><strong>${visit.visit_date}</strong><div class="meta">${safe(visit.note)}</div></div><div>${visit.points_added}pt</div>`;
+        visitList.appendChild(row);
+      });
+    }
+
+    document.querySelectorAll('.tab').forEach((btn) => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    document.querySelectorAll('[data-tab-target]').forEach((btn) => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tabTarget));
+    });
+
+    document.getElementById('register-btn').addEventListener('click', async () => {
+      const name = document.getElementById('register-name').value.trim();
+      const msg = document.getElementById('register-msg');
+      msg.textContent = '';
+      if (!name) {
+        msg.textContent = '名前を入力してください';
+        msg.className = 'error';
+        return;
+      }
+      const res = await fetch(`${API_BASE}/api/public/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lineUserId, name }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        msg.textContent = data.error || '登録に失敗しました';
+        msg.className = 'error';
+        return;
+      }
+      msg.textContent = '登録できました';
+      msg.className = 'success';
+      fetchPublicMember();
+    });
+
+    fetchPublicMember().catch((err) => {
+      alert(`APIに接続できません: ${err.message}\nAPI_BASE=${API_BASE}`);
+    });
+  </script>
+</body>
+</html>
