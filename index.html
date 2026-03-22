@@ -322,6 +322,8 @@
   }
   .field textarea{min-height:96px; resize:vertical}
   .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:16px}
+  .loading,.empty,.error{padding:18px; border-radius:18px; margin-bottom:12px; border:1px solid var(--line); background:rgba(255,255,255,.04)}
+  .error{border-color:rgba(255,106,106,.2); background:rgba(255,106,106,.07); color:#ffd4d4}
   .mobile-bottom{display:none}
   @media (max-width: 1200px){
     .app{grid-template-columns:72px 1fr}
@@ -437,6 +439,8 @@
         </div>
       </div>
 
+      <div id="messageArea"></div>
+
       <div class="board-wrap">
         <div class="board" id="board"></div>
       </div>
@@ -524,7 +528,11 @@
 </div>
 
 <script>
-const STORAGE_KEY = "koujikanri_ui_v3";
+const CONFIG = {
+  API_BASE: 'https://REPLACE_WITH_YOUR_WORKER_URL',
+  USER_ID: 'demo-user'
+};
+
 const STATUSES = [
   { key:"見積中", color:"#ffb458" },
   { key:"受注", color:"#9d7cff" },
@@ -586,17 +594,13 @@ const seedProjects = [
 ];
 
 let state = {
-  projects: loadProjects(),
+  projects: [],
   selectedId: null,
-  filter: "all",
-  search: ""
+  filter: 'all',
+  search: '',
+  loading: false,
+  error: ''
 };
-
-if (!state.projects.length) {
-  state.projects = seedProjects;
-  persist();
-}
-if (!state.selectedId && state.projects[0]) state.selectedId = state.projects[0].id;
 
 const board = document.getElementById("board");
 const detailPanel = document.getElementById("detailPanel");
@@ -616,7 +620,7 @@ document.getElementById("modalBackdrop").addEventListener("click", (e) => {
 document.getElementById("saveProjectBtn").onclick = saveProject;
 document.getElementById("searchInput").addEventListener("input", e => {
   state.search = e.target.value.trim();
-  render();
+  init();
 });
 document.querySelectorAll(".filter-btn").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -630,7 +634,79 @@ document.querySelectorAll(".filter-btn").forEach(btn => {
 
 render();
 
+async function init(){
+  if (CONFIG.API_BASE.includes('REPLACE_WITH_YOUR_WORKER_URL')) {
+    state.error = 'API_BASE が未設定。worker の URL に書き換えてください。';
+    render();
+    return;
+  }
+  try {
+    state.loading = true;
+    renderMessage();
+    await ensureSeed();
+    await fetchProjects();
+  } catch (err) {
+    state.error = err.message || '初期化に失敗しました';
+  } finally {
+    state.loading = false;
+    render();
+  }
+}
+
+async function ensureSeed(){
+  try { await api('/api/seed', { method:'POST' }); } catch(e) {}
+}
+
+async function fetchProjects(){
+  const data = await api(`/api/projects?user_id=${encodeURIComponent(CONFIG.USER_ID)}`);
+  state.projects = (data.projects || []).map(normalizeProject);
+  if (!state.selectedId && state.projects[0]) state.selectedId = state.projects[0].id;
+  if (state.selectedId && !state.projects.find(p => p.id === state.selectedId)) state.selectedId = state.projects[0]?.id || null;
+  state.error = '';
+  render();
+}
+
+function normalizeProject(p){
+  return {
+    id: p.id,
+    name: p.name || '無題案件',
+    customer: p.customer_name || '未設定',
+    address: p.address || '未設定',
+    manager: p.manager || '未設定',
+    status: p.status || '見積中',
+    progress: Number(p.progress || 0),
+    start: p.start_date || '',
+    end: p.end_date || '',
+    drawings: Number(p.drawings || 0),
+    estimates: Number(p.estimates || 0),
+    photos: Number(p.photos || 0),
+    priority: p.priority || '未設定',
+    note: p.note || '',
+    updates: [p.updated_at ? `最終更新：${String(p.updated_at).slice(0,16).replace('T',' ')}` : '更新情報なし', p.note || '補足なし']
+  };
+}
+
+function renderMessage(){
+  const el = document.getElementById('messageArea');
+  if (!el) return;
+  if (state.loading) { el.innerHTML = '<div class="loading">読み込み中...</div>'; return; }
+  if (state.error) { el.innerHTML = `<div class="error">${escapeHtml(state.error)}</div>`; return; }
+  if (state.projects.length === 0) { el.innerHTML = '<div class="empty">案件がありません。新規案件を追加してください。</div>'; return; }
+  el.innerHTML = '';
+}
+
+async function api(path, options = {}){
+  const res = await fetch(`${CONFIG.API_BASE}${path}`, {
+    headers: { 'Content-Type':'application/json' },
+    ...options
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data.ok === false) throw new Error(data.message || data.error || 'API error');
+  return data;
+}
+
 function render(){
+  renderMessage();
   renderBoard();
   renderDetail();
   renderStats();
@@ -738,7 +814,7 @@ function renderDetail(){
       <button class="gold-btn">QRを表示</button>
     </div>
   `;
-  document.getElementById("detailAction").onclick = () => alert("次の段階で案件詳細ページへ接続");
+  document.getElementById('detailAction').onclick = fetchProjects;
 }
 function renderStats(){
   const visible = getVisibleProjects();
@@ -767,15 +843,27 @@ function getVisibleProjects(){
     return matchesSearch && matchesFilter;
   });
 }
-function moveProject(id, status){
+async function moveProject(id, status){
   const project = state.projects.find(p => p.id === id);
   if (!project) return;
+  const prevStatus = project.status;
+  const prevProgress = project.progress;
+  let nextProgress = project.progress;
+  if (status === '完了') nextProgress = 100;
+  if (status === '施工中' && nextProgress < 70) nextProgress = 70;
+  if (status === '着工前' && nextProgress > 69) nextProgress = 60;
   project.status = status;
-  if (status === "完了") project.progress = 100;
-  if (status === "施工中" && project.progress < 70) project.progress = 70;
-  if (status === "着工前" && project.progress > 69) project.progress = 60;
-  persist();
+  project.progress = nextProgress;
   render();
+  try {
+    await api('/api/kanban/move', { method:'POST', body: JSON.stringify({ id, status, progress: nextProgress }) });
+    await fetchProjects();
+  } catch (err) {
+    project.status = prevStatus;
+    project.progress = prevProgress;
+    state.error = err.message || 'ステータス更新に失敗しました';
+    render();
+  }
 }
 function openModal(){
   document.getElementById("modalBackdrop").classList.add("show");
@@ -783,36 +871,37 @@ function openModal(){
 function closeModal(){
   document.getElementById("modalBackdrop").classList.remove("show");
 }
-function saveProject(){
-  if (state.projects.length >= 5) {
-    alert("無料版では案件は5件までです。Proで解除できます。");
-    return;
-  }
-  const name = document.getElementById("fName").value.trim();
-  const customer = document.getElementById("fCustomer").value.trim();
-  const manager = document.getElementById("fManager").value.trim();
-  const address = document.getElementById("fAddress").value.trim();
-  const status = document.getElementById("fStatus").value;
-  const progress = Math.max(0, Math.min(100, Number(document.getElementById("fProgress").value || 0)));
-  const start = document.getElementById("fStart").value;
-  const end = document.getElementById("fEnd").value;
-  const memo = document.getElementById("fMemo").value.trim();
-  if (!name || !customer || !address) {
-    alert("案件名・顧客名・現場住所は必須です。");
-    return;
-  }
-  const project = {
-    id: uid(), name, customer, manager: manager || "未設定", address, status,
-    progress, start: start || todayPlus(1), end: end || todayPlus(14),
-    drawings: 0, estimates: 0, photos: 0, priority:"新規追加", note:memo || "登録された案件です",
-    updates:["案件が新規登録されました。","詳細設定は次の画面で追加入力できます。"]
+async function saveProject(){
+  const payload = {
+    user_id: CONFIG.USER_ID,
+    name: document.getElementById('fName').value.trim(),
+    customer_name: document.getElementById('fCustomer').value.trim(),
+    manager: document.getElementById('fManager').value.trim(),
+    address: document.getElementById('fAddress').value.trim(),
+    status: document.getElementById('fStatus').value,
+    progress: Number(document.getElementById('fProgress').value || 0),
+    start_date: document.getElementById('fStart').value,
+    end_date: document.getElementById('fEnd').value,
+    note: document.getElementById('fMemo').value.trim(),
+    priority: '新規追加'
   };
-  state.projects.unshift(project);
-  state.selectedId = project.id;
-  persist();
-  closeModal();
-  clearForm();
-  render();
+  if (!payload.name || !payload.customer_name || !payload.address) { alert('案件名・顧客名・現場住所は必須です。'); return; }
+  try {
+    await api('/api/projects', { method:'POST', body: JSON.stringify(payload) });
+    closeModal();
+    clearForm();
+    await fetchProjects();
+  } catch (err) {
+    alert(err.message || '案件追加に失敗しました');
+  }
+}
+
+function clearForm(){
+  ['fName','fCustomer','fManager','fAddress','fMemo'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('fProgress').value='20';
+  document.getElementById('fStatus').value='見積中';
+  document.getElementById('fStart').value='';
+  document.getElementById('fEnd').value='';
 }
 function clearForm(){
   ["fName","fCustomer","fManager","fAddress","fMemo"].forEach(id => document.getElementById(id).value = "");
@@ -833,14 +922,6 @@ function isThisWeekEnd(project){
   const end = new Date(project.end + "T00:00:00");
   const diff = (end - today) / 86400000;
   return diff >= 0 && diff <= 7;
-}
-function loadProjects(){
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-  } catch { return []; }
-}
-function persist(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.projects));
 }
 function uid(){
   return Math.random().toString(36).slice(2,10);
