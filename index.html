@@ -118,6 +118,16 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.
 .note-section-head h6{margin:0;font-size:13px;color:#f5dfa4}
 .note-section-count{font-size:11px;color:var(--muted)}
 .note-edit-actions{display:flex;gap:8px;flex-shrink:0}
+.note-toolbar{display:grid;gap:10px;margin-bottom:12px}
+.note-search{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.note-search input{background:transparent;border:none;padding:0;width:100%}
+.note-search input:focus{outline:none}
+.note-filter-row{display:flex;gap:8px;flex-wrap:wrap}
+.note-chip{padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);font-size:12px;font-weight:800;cursor:pointer}
+.note-chip.active{background:rgba(216,179,92,.14);border-color:rgba(216,179,92,.25)}
+.note-priority-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;background:rgba(255,180,88,.12);border:1px solid rgba(255,180,88,.18);margin-bottom:10px}
+.note-priority-banner strong{font-size:13px}
+.note-priority-banner span{font-size:12px;color:#ffd39d}
 
 @media (max-width:1280px){.app{grid-template-columns:64px minmax(0,1fr)}.right{display:none}}
 @media (max-width:820px){
@@ -148,8 +158,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.
       <div class="title"><h1>工事管理くん</h1><p>案件・工程・図面・写真・ノートをまとめる管理ダッシュボード</p></div>
       <div class="search-row">
         <div class="search"><span>⌕</span><input id="searchInput" placeholder="案件名・顧客名・住所で検索"></div>
-        <button class="ghost-btn" id="toggleFilterBtn">すべて</button>
-        <button class="gold-btn" id="openCreateModalBtn">＋ 案件追加</button>
+        <button class="ghost-btn" id="toggleFilterBtn" type="button">すべて</button>
+        <button class="gold-btn" id="openCreateModalBtn" type="button">＋ 案件追加</button>
       </div>
     </div>
 
@@ -175,10 +185,10 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.
       <div class="section-head">
         <div><h2>工程管理</h2><p>案件カードをドラッグして進捗ステータスを更新。</p></div>
         <div class="filters">
-          <button class="filter-btn active" data-filter="all">すべて</button>
-          <button class="filter-btn" data-filter="priority">優先</button>
-          <button class="filter-btn" data-filter="delay">遅延</button>
-          <button class="filter-btn" data-filter="thisweek">今週完了</button>
+          <button class="filter-btn active" data-filter="all" type="button">すべて</button>
+          <button class="filter-btn" data-filter="priority" type="button">優先</button>
+          <button class="filter-btn" data-filter="delay" type="button">遅延</button>
+          <button class="filter-btn" data-filter="thisweek" type="button">今週完了</button>
         </div>
       </div>
       <div id="messageArea"></div>
@@ -241,11 +251,26 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.
   </div>
 </div>
 
+<div class="modal-backdrop" id="noteEditModal">
+  <div class="modal">
+    <h3 style="margin:0 0 14px;font-size:28px">ノート編集</h3>
+    <div class="form-grid">
+      <div class="field"><label>種別</label><select id="nType"><option value="daily">今日の報告</option><option value="check">要確認</option><option value="done">完了報告</option></select></div>
+      <div class="field"><label>作成日時</label><input id="nCreated" readonly></div>
+      <div class="field full"><label>内容</label><textarea id="nContent"></textarea></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px">
+      <button class="ghost-btn" id="closeNoteEditModalBtn" type="button">閉じる</button>
+      <button class="gold-btn" id="saveNoteEditBtn" type="button">更新する</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const CONFIG={API_BASE:"https://koujikanri-worker.ssssqqqq255.workers.dev",USER_ID:"demo-user"};
 const STATUSES=[{key:"見積中",color:"#ffb458"},{key:"受注",color:"#9d7cff"},{key:"着工前",color:"#6ecdfb"},{key:"施工中",color:"#69a7ff"},{key:"検査",color:"#4ce0a0"},{key:"完了",color:"#50db87"}];
 const NOTE_TYPES={daily:"今日の報告",check:"要確認",done:"完了報告"};
-let state={projects:[],selectedId:null,filter:"all",search:"",loading:false,error:"",filesByProject:{},notesByProject:{}};
+let state={projects:[],selectedId:null,filter:"all",search:"",loading:false,error:"",filesByProject:{},notesByProject:{},editingNoteId:null,editingNoteProjectId:null,noteSearch:"",noteTypeFilter:"all"};
 
 const board=document.getElementById("board"),detailPanel=document.getElementById("detailPanel"),messageArea=document.getElementById("messageArea");
 document.getElementById("apiHostView").textContent=CONFIG.API_BASE.replace(/^https?:\/\//,"");
@@ -259,9 +284,11 @@ for (const s of STATUSES) {
 document.getElementById("openCreateModalBtn").onclick=()=>openModal("createModal");
 document.getElementById("closeCreateModalBtn").onclick=()=>closeModal("createModal");
 document.getElementById("closeEditModalBtn").onclick=()=>closeModal("editModal");
+document.getElementById("closeNoteEditModalBtn").onclick=()=>closeModal("noteEditModal");
 document.getElementById("saveCreateBtn").onclick=createProject;
 document.getElementById("saveEditBtn").onclick=updateProject;
 document.getElementById("deleteProjectBtn").onclick=deleteProject;
+document.getElementById("saveNoteEditBtn").onclick=saveNoteEdit;
 document.getElementById("searchInput").addEventListener("input",e=>{state.search=e.target.value.trim();render();});
 document.querySelectorAll(".filter-btn").forEach(btn=>btn.addEventListener("click",()=>{
   document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
@@ -391,10 +418,17 @@ function renderDetail(){
 
   const files=state.filesByProject[project.id]||[];
   const notes=state.notesByProject[project.id]||[];
+  const noteKeyword=state.noteSearch.trim().toLowerCase();
+  const filteredNotes=notes.filter(n=>{
+    const type=(n.note_type||"daily");
+    const typeHit=state.noteTypeFilter==="all" ? true : type===state.noteTypeFilter;
+    const keywordHit=!noteKeyword || [NOTE_TYPES[type]||"", n.content||""].join(" ").toLowerCase().includes(noteKeyword);
+    return typeHit && keywordHit;
+  });
   const groupedNotes={
-    daily:notes.filter(n=>(n.note_type||"daily")==="daily"),
-    check:notes.filter(n=>n.note_type==="check"),
-    done:notes.filter(n=>n.note_type==="done")
+    check:filteredNotes.filter(n=>n.note_type==="check"),
+    daily:filteredNotes.filter(n=>(n.note_type||"daily")==="daily"),
+    done:filteredNotes.filter(n=>n.note_type==="done")
   };
 
   detailPanel.innerHTML=`<div class="detail-head"><div><h4>${escapeHtml(project.name)}</h4><div class="hint">選択中の案件詳細</div></div><span class="badge ${isDelayed(project)?'red':'orange'}">${isDelayed(project)?'遅延注意':escapeHtml(project.priority)}</span></div>
@@ -440,12 +474,23 @@ function renderDetail(){
 
   <div class="box">
     <h5>ノート一覧</h5>
-    <div class="note-sections">
-      ${renderNoteSection("daily", groupedNotes.daily)}
-      ${renderNoteSection("check", groupedNotes.check)}
-      ${renderNoteSection("done", groupedNotes.done)}
+    ${groupedNotes.check.length?`<div class="note-priority-banner"><strong>要確認が ${groupedNotes.check.length} 件あります</strong><span>優先で確認してください</span></div>`:""}
+    <div class="note-toolbar">
+      <div class="note-search"><span>⌕</span><input id="noteSearchInput" value="${escapeAttr(state.noteSearch)}" placeholder="ノート内容で検索"></div>
+      <div class="note-filter-row">
+        <button class="note-chip ${state.noteTypeFilter==="all"?"active":""}" data-note-filter="all" type="button">すべて</button>
+        <button class="note-chip ${state.noteTypeFilter==="check"?"active":""}" data-note-filter="check" type="button">要確認</button>
+        <button class="note-chip ${state.noteTypeFilter==="daily"?"active":""}" data-note-filter="daily" type="button">今日の報告</button>
+        <button class="note-chip ${state.noteTypeFilter==="done"?"active":""}" data-note-filter="done" type="button">完了報告</button>
+      </div>
     </div>
-  </div>
+    <div class="note-sections">
+      ${renderNoteSection("check", groupedNotes.check)}
+      ${renderNoteSection("daily", groupedNotes.daily)}
+      ${renderNoteSection("done", groupedNotes.done)}
+      ${filteredNotes.length? "": `<div class="file-sub">条件に合うノートはありません</div>`}
+    </div>
+  </div></div>
 
   <div class="detail-actions"><button class="ghost-btn" id="refreshBtn" type="button">再読込</button><button class="ghost-btn" id="editProjectBtn" type="button">案件編集</button><button class="gold-btn" id="qrBtn" type="button">QRを発行</button></div>`;
 
@@ -460,7 +505,18 @@ function renderDetail(){
 
   detailPanel.querySelectorAll("[data-file-id]").forEach(btn=>btn.onclick=()=>deleteFile(btn.dataset.fileId,project.id));
   detailPanel.querySelectorAll("[data-note-id]").forEach(btn=>btn.onclick=()=>deleteNote(btn.dataset.noteId,project.id));
-  detailPanel.querySelectorAll("[data-note-edit-id]").forEach(btn=>btn.onclick=()=>openNoteEdit(btn.dataset.noteEditId, project.id));
+  detailPanel.querySelectorAll("[data-note-edit-id]").forEach(btn=>btn.onclick=()=>openNoteEditModal(btn.dataset.noteEditId, project.id));
+  const noteSearchInput=document.getElementById("noteSearchInput");
+  if(noteSearchInput){
+    noteSearchInput.addEventListener("input",e=>{
+      state.noteSearch=e.target.value;
+      renderDetail();
+    });
+  }
+  detailPanel.querySelectorAll("[data-note-filter]").forEach(btn=>btn.onclick=()=>{
+    state.noteTypeFilter=btn.dataset.noteFilter;
+    renderDetail();
+  });
 }
 
 function renderNoteSection(type, notes){
@@ -624,29 +680,30 @@ async function addNote(projectId){
   }
 }
 
-async function openNoteEdit(noteId,projectId){
+function openNoteEditModal(noteId,projectId){
   const notes=state.notesByProject[projectId]||[];
   const note=notes.find(n=>n.id===noteId);
   if(!note)return;
+  state.editingNoteId=noteId;
+  state.editingNoteProjectId=projectId;
+  document.getElementById("nType").value=note.note_type||"daily";
+  document.getElementById("nCreated").value=formatDateTime(note.created_at||"");
+  document.getElementById("nContent").value=note.content||"";
+  openModal("noteEditModal");
+}
 
-  const newType=prompt(`ノート種別を入力してください\n daily / check / done`, note.note_type||"daily");
-  if(newType===null)return;
-  const normalizedType=String(newType).trim();
-  if(!["daily","check","done"].includes(normalizedType)){
-    alert("種別は daily / check / done のどれかで入力してください。");
-    return;
-  }
-
-  const newContent=prompt("ノート内容を編集", note.content||"");
-  if(newContent===null)return;
-  if(!newContent.trim()){
+async function saveNoteEdit(){
+  if(!state.editingNoteId||!state.editingNoteProjectId)return;
+  const note_type=document.getElementById("nType").value;
+  const content=document.getElementById("nContent").value.trim();
+  if(!content){
     alert("ノート内容を入力してください");
     return;
   }
-
   try{
-    await api(`/api/notes/${noteId}`,{method:"PUT",body:JSON.stringify({note_type:normalizedType,content:newContent.trim()})});
-    await fetchNotes(projectId);
+    await api(`/api/notes/${state.editingNoteId}`,{method:"PUT",body:JSON.stringify({note_type,content})});
+    closeModal("noteEditModal");
+    await fetchNotes(state.editingNoteProjectId);
     render();
   }catch(e){
     alert(e.message||"ノート更新に失敗しました");
@@ -715,7 +772,13 @@ async function uploadFile(projectId){
 }
 
 function openModal(id){document.getElementById(id).classList.add("show");}
-function closeModal(id){document.getElementById(id).classList.remove("show");}
+function closeModal(id){
+  document.getElementById(id).classList.remove("show");
+  if(id==="noteEditModal"){
+    state.editingNoteId=null;
+    state.editingNoteProjectId=null;
+  }
+}
 function clearCreateForm(){
   ["cName","cCustomer","cManager","cAddress","cNote","cStart","cEnd"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("cProgress").value="20";
