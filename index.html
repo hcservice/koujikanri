@@ -8,8 +8,11 @@
 :root{
   --line:rgba(255,255,255,.08);--text:#f4f6fb;--muted:#aab3c5;--gold:#d8b35c;--gold2:#f0d28d;
   --daily:#69a7ff;--check:#ffb458;--done:#4ce0a0;
+  --todo:#ff7676;--doing:#ffcc66;--resolved:#4ce0a0;
+  --high:#ff7b7b;--medium:#ffb458;--low:#7cc0ff;
 }
-*{box-sizing:border-box} html,body{height:100%;width:100%;min-width:0}
+*{box-sizing:border-box}
+html,body{height:100%;width:100%;min-width:0}
 body{
   margin:0;color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Hiragino Sans","Noto Sans JP",sans-serif;
@@ -17,11 +20,21 @@ body{
     radial-gradient(1200px 500px at 20% -10%, rgba(216,179,92,.14), transparent 50%),
     radial-gradient(900px 400px at 100% 0%, rgba(91,118,255,.13), transparent 45%),
     linear-gradient(180deg,#0a0b0f,#0d1016 50%, #0b0d12);
+  overflow-x:hidden;
 }
-.app{min-height:100vh;width:100%;max-width:none;margin:0;display:grid;grid-template-columns:64px minmax(0,1fr) 340px;gap:14px;padding:14px}
+.app{
+  min-height:100vh;
+  width:100%;
+  max-width:none;
+  margin:0;
+  display:grid;
+  grid-template-columns:64px minmax(0,1fr) 360px;
+  gap:14px;
+  padding:14px
+}
 .sidebar,.right,.main-shell{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));border:1px solid var(--line);border-radius:24px;min-width:0}
 .sidebar{display:flex;flex-direction:column;align-items:center;padding:12px 8px;gap:10px}
-.logo-mini,.avatar{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;color:#1b1403;font-weight:900;background:linear-gradient(180deg,var(--gold2),var(--gold))}
+.logo-mini{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;color:#1b1403;font-weight:900;background:linear-gradient(180deg,var(--gold2),var(--gold))}
 .nav-btn{width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:#dce3f1;display:grid;place-items:center}.nav-btn.active{background:rgba(216,179,92,.14)}.spacer{flex:1}
 .main-shell{overflow:hidden;display:grid;grid-template-rows:auto auto 1fr}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px 14px;border-bottom:1px solid var(--line)}
@@ -41,7 +54,7 @@ button{border:none;cursor:pointer;border-radius:14px;font-weight:700}
 .section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}.section-head h2{margin:0;font-size:30px}.section-head p{margin:6px 0 0;color:var(--muted)}
 .filters{display:flex;gap:8px;flex-wrap:wrap}.filter-btn.active{background:rgba(216,179,92,.14)}
 .board-wrap{min-width:0;min-height:0;overflow:auto;padding-bottom:8px}
-.board{display:grid;grid-template-columns:repeat(6,minmax(220px,1fr));gap:12px;min-width:1380px}
+.board{display:grid;grid-template-columns:repeat(6,minmax(240px,1fr));gap:12px;min-width:1460px}
 .column{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:12px;min-height:500px}.column.drag-over{outline:2px solid rgba(216,179,92,.45)}
 .column-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.column-title{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px}.dot{width:10px;height:10px;border-radius:50%}
 .count{min-width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:rgba(255,255,255,.06);font-size:12px;font-weight:800}.cards{display:flex;flex-direction:column;gap:12px;min-height:60px}
@@ -51,50 +64,85 @@ button{border:none;cursor:pointer;border-radius:14px;font-weight:700}
 .meta{margin-top:10px;color:#dfe6f3;font-size:14px;line-height:1.6}.meta span{display:block;word-break:break-word}.label-muted{color:#a7b0c0}
 .progress{margin-top:12px}.progress .row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px}.bar{height:9px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,#7cb3ff,#ebc75e);border-radius:999px}
 .mini-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.mini-tag{background:rgba(255,255,255,.08);padding:6px 8px;border-radius:10px;font-size:12px;font-weight:700}
-.right{padding:14px;display:grid;grid-template-rows:auto auto 1fr;gap:12px;overflow:auto}.mini-stats{display:grid;grid-template-columns:1fr;gap:10px}.mini-stat{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:16px;padding:12px}.mini-stat .label{color:var(--muted);font-size:12px}.mini-stat .value{margin-top:8px;font-size:15px;font-weight:900;word-break:break-word}
+.tag-red{background:rgba(255,106,106,.14);color:#ffd4d4}.tag-gold{background:rgba(255,180,88,.15);color:#ffe0a8}.tag-blue{background:rgba(105,167,255,.15);color:#d1e1ff}
+.right{padding:14px;display:grid;grid-template-rows:auto auto auto 1fr;gap:12px;overflow:auto}.mini-stats{display:grid;grid-template-columns:1fr;gap:10px}.mini-stat{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:16px;padding:12px}.mini-stat .label{color:var(--muted);font-size:12px}.mini-stat .value{margin-top:8px;font-size:15px;font-weight:900;word-break:break-word}
+.alert-strip{display:flex;gap:8px;flex-wrap:wrap}
+.alert-pill{padding:8px 10px;border-radius:999px;font-size:12px;font-weight:800}
+.alert-pill.red{background:rgba(255,106,106,.16);color:#ffd4d4}
+.alert-pill.gold{background:rgba(255,180,88,.16);color:#ffe0a8}
+.alert-pill.blue{background:rgba(105,167,255,.16);color:#d1e1ff}
 .detail{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;min-height:0}.detail-head{display:flex;justify-content:space-between;gap:10px;align-items:start;margin-bottom:8px}.detail h4{margin:0;font-size:22px;line-height:1.2;word-break:break-word}.hint{color:var(--muted);font-size:13px;margin-top:6px}
 .detail-grid{display:grid;grid-template-columns:1fr;gap:10px;margin:12px 0}.detail-item{border-top:1px dashed rgba(255,255,255,.08);padding-top:10px}.detail-item .k{font-size:12px;color:var(--muted)}.detail-item .v{margin-top:6px;font-size:16px;font-weight:800;word-break:break-word}
 .box{margin-top:8px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:16px;padding:12px}.box h5{margin:0 0 12px;font-size:14px;color:#f3e2b0}
 .file-item,.note-item{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px dashed rgba(255,255,255,.08)}.file-item:first-of-type,.note-item:first-of-type{border-top:none;padding-top:0}
 .file-left,.note-left{min-width:0}.file-name,.note-title{font-size:14px;font-weight:700;word-break:break-word}.file-sub,.note-sub{font-size:12px;color:var(--muted);margin-top:4px;word-break:break-word}
-.upload-row,.note-form{display:grid;grid-template-columns:1fr;gap:8px}
-.upload-row select,.upload-row input[type=file],.note-form select,.note-form textarea{width:100%;min-width:0;background:rgba(255,255,255,.04);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.upload-row,.note-form,.note-tools{display:grid;grid-template-columns:1fr;gap:8px}
+.upload-row select,.upload-row input[type=file],.note-form select,.note-form textarea,.note-form input,.note-tools input,.note-tools select,
+.field input,.field select,.field textarea,
+input,select,textarea{
+  width:100%;
+  min-width:0;
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 12px;
+  outline:none;
+  font:inherit;
+}
 .note-form textarea{min-height:84px;resize:vertical}
-.note-pill{display:inline-flex;align-items:center;padding:6px 8px;border-radius:999px;font-size:11px;font-weight:800}
-.note-pill.daily{background:rgba(105,167,255,.18);color:#cce0ff}.note-pill.check{background:rgba(255,180,88,.18);color:#ffd39d}.note-pill.done{background:rgba(76,224,160,.18);color:#bff8de}
-.detail-actions{display:flex;gap:10px;margin-top:12px}.detail-actions>*{flex:1;min-width:0}
-.loading,.empty,.error{padding:18px;border-radius:18px;margin-bottom:12px;border:1px solid var(--line);background:rgba(255,255,255,.04)}.error{border-color:rgba(255,106,106,.2);background:rgba(255,106,106,.07);color:#ffd4d4}
-.modal-backdrop{position:fixed;inset:0;background:rgba(2,4,10,.54);display:none;place-items:center;z-index:100}.modal-backdrop.show{display:grid}
-.modal{width:min(680px,calc(100vw - 32px));background:linear-gradient(180deg,#141821,#10131a);border:1px solid var(--line);border-radius:24px;padding:20px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:8px}.field.full{grid-column:1/-1}
-.field input,.field select,.field textarea{background:rgba(255,255,255,.04);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px 14px;outline:none;font:inherit}.field textarea{min-height:96px;resize:vertical}
+.field textarea{min-height:96px;resize:vertical}
 select{-webkit-appearance:none;-moz-appearance:none;appearance:none}
 select,option,optgroup{background:#1b2130 !important;color:#f4f6fb !important}
 input::placeholder,textarea::placeholder{color:rgba(244,246,251,.45)}
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.8)}
+.note-pill{display:inline-flex;align-items:center;padding:6px 8px;border-radius:999px;font-size:11px;font-weight:800}
+.note-pill.daily{background:rgba(105,167,255,.18);color:#cce0ff}.note-pill.check{background:rgba(255,180,88,.18);color:#ffd39d}.note-pill.done{background:rgba(76,224,160,.18);color:#bff8de}
+.status-pill{display:inline-flex;align-items:center;padding:6px 8px;border-radius:999px;font-size:11px;font-weight:800}
+.status-pill.todo{background:rgba(255,106,106,.16);color:#ffd4d4}.status-pill.doing{background:rgba(255,180,88,.16);color:#ffe0a8}.status-pill.done{background:rgba(76,224,160,.16);color:#c8ffe5}
+.priority-pill{display:inline-flex;align-items:center;padding:6px 8px;border-radius:999px;font-size:11px;font-weight:800}
+.priority-pill.high{background:rgba(255,106,106,.16);color:#ffd4d4}.priority-pill.medium{background:rgba(255,180,88,.16);color:#ffe0a8}.priority-pill.low{background:rgba(105,167,255,.16);color:#d1e1ff}
+.note-header-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .note-edit-actions{display:flex;gap:8px;flex-shrink:0}
-
+.note-sections{display:grid;gap:12px}
+.note-section{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:10px}
+.note-section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
+.note-section-head h6{margin:0;font-size:13px;color:#f5dfa4}
+.note-section-count{font-size:11px;color:var(--muted)}
+.detail-actions{display:flex;gap:10px;margin-top:12px}.detail-actions>*{flex:1;min-width:0}
+.loading,.empty,.error{padding:18px;border-radius:18px;margin-bottom:12px;border:1px solid var(--line);background:rgba(255,255,255,.04)}.error{border-color:rgba(255,106,106,.2);background:rgba(255,106,106,.07);color:#ffd4d4}
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,4,10,.54);display:none;place-items:center;z-index:100}.modal-backdrop.show{display:grid}
+.modal{width:min(720px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;background:linear-gradient(180deg,#141821,#10131a);border:1px solid var(--line);border-radius:24px;padding:20px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:8px}.field.full{grid-column:1/-1}
 @media (max-width:1280px){.app{grid-template-columns:64px minmax(0,1fr)}.right{display:none}}
-@media (max-width:820px){.app{display:block;padding:10px}.sidebar{display:none}.topbar{display:block;padding:16px}.title h1{font-size:28px}.search-row{min-width:0;margin-top:14px}.search{width:100%}.stats{grid-template-columns:1fr 1fr;padding:14px 16px}.banner{margin:0 16px 16px}.main{padding:0 16px 24px}.section-head{display:block}.section-head h2{font-size:28px}.board{grid-template-columns:repeat(6,84vw);min-width:max-content}.form-grid{grid-template-columns:1fr}}
-
-.urgent-banner{margin:0 20px 16px;background:linear-gradient(90deg, rgba(255,106,106,.18), rgba(255,106,106,.07));border:1px solid rgba(255,106,106,.22);border-radius:18px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.urgent-banner strong{font-size:14px}.urgent-count{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);padding:8px 12px;border-radius:999px;font-weight:800}
-.alert-dot{width:10px;height:10px;border-radius:50%;background:#ff6a6a;box-shadow:0 0 0 6px rgba(255,106,106,.12)}
-.card-alert{margin-top:10px;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;background:rgba(255,106,106,.12);border:1px solid rgba(255,106,106,.16);font-size:12px;font-weight:800;color:#ffd2d2}
-.note-toolbar{display:grid;grid-template-columns:minmax(0,1fr) 160px;gap:8px;margin-bottom:10px}.note-filter-row{display:flex;gap:8px;flex-wrap:wrap}.note-filter-btn{padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);font-size:12px;font-weight:700}.note-filter-btn.active{background:rgba(216,179,92,.14)}
-.note-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.status-pill{display:inline-flex;align-items:center;padding:6px 8px;border-radius:999px;font-size:11px;font-weight:800}.status-pill.todo{background:rgba(255,106,106,.16);color:#ffd2d2}.status-pill.doing{background:rgba(255,180,88,.18);color:#ffd39d}.status-pill.done{background:rgba(76,224,160,.16);color:#bff8de}
-.note-author{font-size:12px;color:#dce3f1}.quick-statuses{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.quick-status-btn{padding:6px 8px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);font-size:11px;font-weight:700}.quick-status-btn.active{background:rgba(216,179,92,.16)}
-.top-alert-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(255,106,106,.12);color:#ffd2d2;font-size:12px;font-weight:800;border:1px solid rgba(255,106,106,.18)}
-.mini-tag.alert{background:rgba(255,106,106,.16);color:#ffd2d2}
-.integration-note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:10px}
-@media (max-width:820px){.note-toolbar{grid-template-columns:1fr}}
-
+@media (max-width:820px){
+  .app{display:block;padding:10px}
+  .sidebar{display:none}
+  .topbar{display:block;padding:16px}
+  .title h1{font-size:28px}
+  .search-row{min-width:0;margin-top:14px}
+  .search{width:100%}
+  .stats{grid-template-columns:1fr 1fr;padding:14px 16px}
+  .banner{margin:0 16px 16px}
+  .main{padding:0 16px 24px}
+  .section-head{display:block}
+  .section-head h2{font-size:28px}
+  .board{grid-template-columns:repeat(6,84vw);min-width:max-content}
+  .form-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="logo-mini">工</div><div class="nav-btn active">⌂</div><div class="nav-btn">▦</div><div class="nav-btn">▤</div><div class="nav-btn">⌘</div><div class="nav-btn">⌁</div><div class="spacer"></div><div class="nav-btn">⚙︎</div>
+    <div class="logo-mini">工</div>
+    <div class="nav-btn active">⌂</div>
+    <div class="nav-btn">▦</div>
+    <div class="nav-btn">▤</div>
+    <div class="nav-btn">⌘</div>
+    <div class="nav-btn">⌁</div>
+    <div class="spacer"></div>
+    <div class="nav-btn">⚙︎</div>
   </aside>
 
   <section class="main-shell">
@@ -102,8 +150,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.
       <div class="title"><h1>工事管理くん</h1><p>案件・工程・図面・写真・ノートをまとめる管理ダッシュボード</p></div>
       <div class="search-row">
         <div class="search"><span>⌕</span><input id="searchInput" placeholder="案件名・顧客名・住所で検索"></div>
-        <button class="ghost-btn" id="toggleFilterBtn">すべて</button>
-        <button class="gold-btn" id="openCreateModalBtn">＋ 案件追加</button>
+        <button class="ghost-btn" id="toggleFilterBtn" type="button">すべて</button>
+        <button class="gold-btn" id="openCreateModalBtn" type="button">＋ 案件追加</button>
       </div>
     </div>
 
@@ -120,7 +168,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.
           <span class="pill gold">案件 <b id="usageProjects">0/5</b></span>
           <span class="pill blue">QR <b id="usageQr">0/1</b></span>
           <span class="pill red" id="usageDelay">遅延 0件</span>
-          <button class="gold-btn">Proにアップグレード</button>
+          <button class="gold-btn" type="button">Proにアップグレード</button>
         </div>
       </div>
     </div>
@@ -129,10 +177,10 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.
       <div class="section-head">
         <div><h2>工程管理</h2><p>案件カードをドラッグして進捗ステータスを更新。</p></div>
         <div class="filters">
-          <button class="filter-btn active" data-filter="all">すべて</button>
-          <button class="filter-btn" data-filter="priority">優先</button>
-          <button class="filter-btn" data-filter="delay">遅延</button>
-          <button class="filter-btn" data-filter="thisweek">今週完了</button>
+          <button class="filter-btn active" data-filter="all" type="button">すべて</button>
+          <button class="filter-btn" data-filter="priority" type="button">優先</button>
+          <button class="filter-btn" data-filter="delay" type="button">遅延</button>
+          <button class="filter-btn" data-filter="thisweek" type="button">今週完了</button>
         </div>
       </div>
       <div id="messageArea"></div>
@@ -141,11 +189,12 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.
   </section>
 
   <aside class="right">
-    <div><h3 style="margin:0 0 6px;font-size:24px">こんにちは</h3><p style="margin:0;color:var(--muted);font-size:13px">ノート強化と編集削除入り。</p></div>
+    <div><h3 style="margin:0 0 6px;font-size:24px">こんにちは</h3><p style="margin:0;color:var(--muted);font-size:13px">要確認を優先表示しています。</p></div>
     <div class="mini-stats">
       <div class="mini-stat"><div class="label">API接続先</div><div class="value" id="apiHostView"></div></div>
       <div class="mini-stat"><div class="label">対象ユーザー</div><div class="value" id="userView"></div></div>
     </div>
+    <div class="alert-strip" id="globalAlertStrip"></div>
     <div class="detail" id="detailPanel"></div>
   </aside>
 </div>
@@ -165,8 +214,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.
       <div class="field full"><label>メモ</label><textarea id="cNote"></textarea></div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px">
-      <button class="ghost-btn" id="closeCreateModalBtn">閉じる</button>
-      <button class="gold-btn" id="saveCreateBtn">保存する</button>
+      <button class="ghost-btn" id="closeCreateModalBtn" type="button">閉じる</button>
+      <button class="gold-btn" id="saveCreateBtn" type="button">保存する</button>
     </div>
   </div>
 </div>
@@ -186,24 +235,25 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.
       <div class="field full"><label>メモ</label><textarea id="eNote"></textarea></div>
     </div>
     <div style="display:flex;justify-content:space-between;gap:10px;margin-top:16px">
-      <button class="danger-btn" id="deleteProjectBtn">案件削除</button>
+      <button class="danger-btn" id="deleteProjectBtn" type="button">案件削除</button>
       <div style="display:flex;gap:10px">
-        <button class="ghost-btn" id="closeEditModalBtn">閉じる</button>
-        <button class="gold-btn" id="saveEditBtn">更新する</button>
+        <button class="ghost-btn" id="closeEditModalBtn" type="button">閉じる</button>
+        <button class="gold-btn" id="saveEditBtn" type="button">更新する</button>
       </div>
     </div>
   </div>
 </div>
 
-
 <div class="modal-backdrop" id="noteEditModal">
   <div class="modal">
     <h3 style="margin:0 0 14px;font-size:28px">ノート編集</h3>
     <div class="form-grid">
-      <div class="field"><label>種別</label><select id="nEditType"><option value="daily">今日の報告</option><option value="check">要確認</option><option value="done">完了報告</option></select></div>
-      <div class="field"><label>対応状況</label><select id="nEditStatus"><option value="todo">未対応</option><option value="doing">対応中</option><option value="done">対応済み</option></select></div>
-      <div class="field full"><label>担当者</label><input id="nEditAuthor" placeholder="例: 山本"></div>
-      <div class="field full"><label>内容</label><textarea id="nEditContent"></textarea></div>
+      <div class="field"><label>種別</label><select id="neType"><option value="daily">今日の報告</option><option value="check">要確認</option><option value="done">完了報告</option></select></div>
+      <div class="field"><label>対応状況</label><select id="neStatus"><option value="todo">未対応</option><option value="doing">対応中</option><option value="done">対応済み</option></select></div>
+      <div class="field"><label>優先度</label><select id="nePriority"><option value="high">高</option><option value="medium">中</option><option value="low">低</option></select></div>
+      <div class="field"><label>期限日</label><input id="neDueDate" type="date"></div>
+      <div class="field full"><label>担当者</label><input id="neAuthor" placeholder="担当者名"></div>
+      <div class="field full"><label>内容</label><textarea id="neContent"></textarea></div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px">
       <button class="ghost-btn" id="closeNoteEditModalBtn" type="button">閉じる</button>
@@ -213,12 +263,24 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) opacity(.
 </div>
 
 <script>
-
 const CONFIG={API_BASE:"https://koujikanri-worker.ssssqqqq255.workers.dev",USER_ID:"demo-user"};
 const STATUSES=[{key:"見積中",color:"#ffb458"},{key:"受注",color:"#9d7cff"},{key:"着工前",color:"#6ecdfb"},{key:"施工中",color:"#69a7ff"},{key:"検査",color:"#4ce0a0"},{key:"完了",color:"#50db87"}];
 const NOTE_TYPES={daily:"今日の報告",check:"要確認",done:"完了報告"};
-const NOTE_STATUSES={todo:"未対応",doing:"対応中",done:"対応済み"};
-let state={projects:[],selectedId:null,filter:"all",search:"",loading:false,error:"",filesByProject:{},notesByProject:{},noteTypeFilter:"all",noteStatusFilter:"all",noteSearch:"",editingNoteId:null,editingProjectId:null};
+const NOTE_STATUS={todo:"未対応",doing:"対応中",done:"対応済み"};
+const NOTE_PRIORITY={high:"高",medium:"中",low:"低"};
+
+let state={
+  projects:[],
+  selectedId:null,
+  filter:"all",
+  search:"",
+  loading:false,
+  error:"",
+  filesByProject:{},
+  notesByProject:{},
+  activeNoteEditId:null,
+  noteFilters:{search:"",type:"all",status:"all",priority:"all",author:"",due:"all"}
+};
 
 const board=document.getElementById("board"),detailPanel=document.getElementById("detailPanel"),messageArea=document.getElementById("messageArea");
 document.getElementById("apiHostView").textContent=CONFIG.API_BASE.replace(/^https?:\/\//,"");
@@ -238,17 +300,32 @@ document.getElementById("saveEditBtn").onclick=updateProject;
 document.getElementById("deleteProjectBtn").onclick=deleteProject;
 document.getElementById("saveNoteEditBtn").onclick=saveNoteEdit;
 document.getElementById("searchInput").addEventListener("input",e=>{state.search=e.target.value.trim();render();});
-document.querySelectorAll(".filter-btn").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");state.filter=btn.dataset.filter;document.getElementById("toggleFilterBtn").textContent=btn.textContent;render();}));
+document.querySelectorAll(".filter-btn").forEach(btn=>btn.addEventListener("click",()=>{
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  state.filter=btn.dataset.filter;
+  document.getElementById("toggleFilterBtn").textContent=btn.textContent;
+  render();
+}));
 document.querySelectorAll(".modal-backdrop").forEach(el=>el.addEventListener("click",e=>{if(e.target===el)el.classList.remove("show");}));
 
 init();
 
 async function init(){
   state.loading=true;renderMessage();
-  try{await ensureSeed();await fetchProjects();state.error="";}catch(e){state.error=e.message||"API error";}
-  state.loading=false;render();
+  try{
+    await ensureSeed();
+    await fetchProjects();
+    state.error="";
+  }catch(e){
+    state.error=e.message||"API error";
+  }
+  state.loading=false;
+  render();
 }
+
 async function ensureSeed(){try{await api("/api/seed");}catch(e){}}
+
 async function fetchProjects(){
   const data=await api(`/api/projects?user_id=${encodeURIComponent(CONFIG.USER_ID)}`);
   state.projects=(data.projects||[]).map(normalizeProject);
@@ -257,59 +334,673 @@ async function fetchProjects(){
   if(state.selectedId){await Promise.all([fetchFiles(state.selectedId),fetchNotes(state.selectedId)]);}
   render();
 }
-async function fetchFiles(projectId){const data=await api(`/api/files?project_id=${encodeURIComponent(projectId)}`);state.filesByProject[projectId]=data.files||[];}
-async function fetchNotes(projectId){const data=await api(`/api/notes?project_id=${encodeURIComponent(projectId)}`);state.notesByProject[projectId]=(data.notes||[]).map(n=>({...n,note_type:n.note_type||"daily",note_status:n.note_status||"todo",note_author:n.note_author||""}));}
-function normalizeProject(p){return{id:p.id,name:p.name||"無題案件",customer:p.customer_name||"未設定",address:p.address||"未設定",manager:p.manager||"未設定",status:p.status||"見積中",progress:Number(p.progress||0),start:p.start_date||"",end:p.end_date||"",drawings:Number(p.drawings||0),estimates:Number(p.estimates||0),photos:Number(p.photos||0),priority:p.priority||"未設定",note:p.note||"",qr_count:Number(p.qr_count||0),check_count:Number(p.check_count||0),unresolved_check_count:Number(p.unresolved_check_count||0),updates:[p.updated_at?`最終更新：${String(p.updated_at).slice(0,16).replace("T"," ")}`:"更新情報なし",p.note||"補足なし"]};}
-function render(){renderMessage();renderBoard();renderDetail();renderStats();}
-function renderMessage(){if(state.loading){messageArea.innerHTML=`<div class="loading">読み込み中...</div>`;return;}if(state.error){messageArea.innerHTML=`<div class="error">${escapeHtml(state.error)}</div>`;return;}if(!state.projects.length){messageArea.innerHTML=`<div class="empty">案件がありません。新規案件を追加してください。</div>`;return;}messageArea.innerHTML="";}
-function renderBoard(){board.innerHTML="";STATUSES.forEach(status=>{const visible=getVisibleProjects().filter(p=>p.status===status.key);const column=document.createElement("div");column.className="column";column.innerHTML=`<div class="column-head"><div class="column-title"><span class="dot" style="background:${status.color}"></span><span>${status.key}</span></div><div class="count">${visible.length}</div></div><div class="cards"></div>`;const wrap=column.querySelector(".cards");visible.forEach(project=>wrap.appendChild(renderCard(project)));column.addEventListener("dragover",e=>{e.preventDefault();column.classList.add("drag-over");});column.addEventListener("dragleave",()=>column.classList.remove("drag-over"));column.addEventListener("drop",async e=>{e.preventDefault();column.classList.remove("drag-over");const id=e.dataTransfer.getData("text/plain");await moveProject(id,status.key);});board.appendChild(column);});}
-function renderCard(project){const delayed=isDelayed(project);const badgeClass=delayed?"red":(project.priority.includes("完了")||project.priority.includes("順調")||project.priority.includes("準備")?"green":project.priority.includes("入金")?"blue":"orange");const el=document.createElement("div");el.className="card"+(state.selectedId===project.id?" active":"");el.draggable=true;el.innerHTML=`<div class="card-top"><h3>${escapeHtml(project.name)}</h3><span class="badge ${badgeClass}">${delayed?"遅延注意":escapeHtml(project.priority)}</span></div><div class="meta"><span><span class="label-muted">顧客：</span>${escapeHtml(project.customer)}</span><span><span class="label-muted">現場：</span>${escapeHtml(project.address)}</span><span><span class="label-muted">担当：</span>${escapeHtml(project.manager)}</span></div><div class="progress"><div class="row"><span>進捗</span><strong>${project.progress}%</strong></div><div class="bar"><i style="width:${project.progress}%"></i></div></div><div class="mini-tags"><span class="mini-tag">図面 ${project.drawings}</span><span class="mini-tag">見積 ${project.estimates}</span><span class="mini-tag">写真 ${project.photos}</span>${project.unresolved_check_count?`<span class="mini-tag alert">要確認 ${project.unresolved_check_count}</span>`:""}</div>${project.unresolved_check_count?`<div class="card-alert"><span class="alert-dot"></span><span>未対応の要確認が ${project.unresolved_check_count}件あります</span></div>`:""}`;el.addEventListener("click",async()=>{state.selectedId=project.id;await Promise.all([fetchFiles(project.id),fetchNotes(project.id)]);render();});el.addEventListener("dragstart",e=>e.dataTransfer.setData("text/plain",project.id));return el;}
-function renderDetail(){const project=state.projects.find(p=>p.id===state.selectedId)||state.projects[0];if(!project){detailPanel.innerHTML=`<div class="hint">案件がありません</div>`;return;}const files=state.filesByProject[project.id]||[];const notes=sortNotes(state.notesByProject[project.id]||[]);const counts=getNoteCounts(notes);const visibleNotes=getVisibleNotes(notes);detailPanel.innerHTML=`<div class="detail-head"><div><h4>${escapeHtml(project.name)}</h4><div class="hint">選択中の案件詳細</div></div>${counts.todoCheck?`<span class="top-alert-chip"><span class="alert-dot"></span>要確認 未対応 ${counts.todoCheck}件</span>`:`<span class="badge ${isDelayed(project)?'red':'orange'}">${isDelayed(project)?'遅延注意':escapeHtml(project.priority)}</span>`}</div><div class="detail-grid"><div class="detail-item"><div class="k">顧客</div><div class="v">${escapeHtml(project.customer)}</div></div><div class="detail-item"><div class="k">現場住所</div><div class="v">${escapeHtml(project.address)}</div></div><div class="detail-item"><div class="k">担当者</div><div class="v">${escapeHtml(project.manager)}</div></div><div class="detail-item"><div class="k">工期</div><div class="v">${formatDate(project.start)} ～ ${formatDate(project.end)}</div></div><div class="detail-item"><div class="k">進捗率</div><div class="v">${project.progress}%</div></div><div class="detail-item"><div class="k">QR</div><div class="v">${project.qr_count||0}件</div></div></div>${counts.todoCheck?`<div class="box"><h5>要確認アラート</h5><div class="urgent-count"><span class="alert-dot"></span>未対応 ${counts.todoCheck}件 / 全要確認 ${counts.check}件</div><div class="integration-note">Slack / LINE の通知土台も worker 側に入っています。Webhook を設定すると要確認追加時に通知できます。</div></div>`:""}<div class="box"><h5>図面・写真アップロード</h5><div class="upload-row"><select id="uploadType"><option value="drawing">図面</option><option value="photo">写真</option><option value="estimate">見積</option></select><input id="uploadFile" type="file"></div><div class="detail-actions"><button class="gold-btn" id="uploadBtn" type="button">アップロード</button></div></div><div class="box"><h5>保存ファイル</h5>${files.length?files.map(f=>`<div class="file-item"><div class="file-left"><div class="file-name">${escapeHtml(f.file_name||"untitled")}</div><div class="file-sub">${escapeHtml(f.file_type||"-")} ・ ${formatBytes(Number(f.file_size||0))}</div></div><div style="display:flex;gap:8px"><a class="small-btn" href="${escapeAttr(f.file_url||"#")}" target="_blank" rel="noopener noreferrer">開く</a><button class="danger-btn" data-file-id="${f.id}" type="button">削除</button></div></div>`).join(""):`<div class="file-sub">まだファイルはありません</div>`}</div><div class="box"><h5>ノート追加</h5><div class="note-form"><select id="noteType"><option value="daily">今日の報告</option><option value="check">要確認</option><option value="done">完了報告</option></select><select id="noteStatus"><option value="todo">未対応</option><option value="doing">対応中</option><option value="done">対応済み</option></select><input id="noteAuthor" placeholder="担当者名を入力"><textarea id="noteContent" placeholder="ノート内容を入力"></textarea></div><div class="detail-actions"><button class="gold-btn" id="addNoteBtn" type="button">ノート追加</button></div></div><div class="box"><h5>ノート一覧</h5><div class="note-toolbar"><input id="noteSearchInput" placeholder="ノート内容・担当者で検索" value="${escapeAttr(state.noteSearch)}"><select id="noteStatusFilter"><option value="all">対応状況: すべて</option><option value="todo" ${state.noteStatusFilter==='todo'?'selected':''}>未対応</option><option value="doing" ${state.noteStatusFilter==='doing'?'selected':''}>対応中</option><option value="done" ${state.noteStatusFilter==='done'?'selected':''}>対応済み</option></select></div><div class="note-filter-row"><button class="note-filter-btn ${state.noteTypeFilter==='all'?'active':''}" data-note-filter="all" type="button">すべて ${counts.all}</button><button class="note-filter-btn ${state.noteTypeFilter==='check'?'active':''}" data-note-filter="check" type="button">要確認 ${counts.check}</button><button class="note-filter-btn ${state.noteTypeFilter==='todo'?'active':''}" data-note-filter="todo" type="button">未対応 ${counts.todo}</button><button class="note-filter-btn ${state.noteTypeFilter==='mine'?'active':''}" data-note-filter="mine" type="button">担当あり ${counts.withAuthor}</button></div>${visibleNotes.length?visibleNotes.map(n=>renderNoteItem(n)).join(""):`<div class="file-sub" style="margin-top:10px">条件に一致するノートはありません</div>`}<div class="integration-note">通知土台: worker に <code>SLACK_WEBHOOK_URL</code> または <code>LINE_NOTIFY_URL</code> を設定すると、要確認の追加・更新時に通知されます。</div></div><div class="detail-actions"><button class="ghost-btn" id="refreshBtn" type="button">再読込</button><button class="ghost-btn" id="editProjectBtn" type="button">案件編集</button><button class="gold-btn" id="qrBtn" type="button">QRを発行</button></div>`;
+
+async function fetchFiles(projectId){
+  const data=await api(`/api/files?project_id=${encodeURIComponent(projectId)}`);
+  state.filesByProject[projectId]=data.files||[];
+}
+
+async function fetchNotes(projectId){
+  const data=await api(`/api/notes?project_id=${encodeURIComponent(projectId)}`);
+  state.notesByProject[projectId]=(data.notes||[]).map(normalizeNote);
+}
+
+function normalizeProject(p){
+  return{
+    id:p.id,
+    name:p.name||"無題案件",
+    customer:p.customer_name||"未設定",
+    address:p.address||"未設定",
+    manager:p.manager||"未設定",
+    status:p.status||"見積中",
+    progress:Number(p.progress||0),
+    start:p.start_date||"",
+    end:p.end_date||"",
+    drawings:Number(p.drawings||0),
+    estimates:Number(p.estimates||0),
+    photos:Number(p.photos||0),
+    priority:p.priority||"未設定",
+    note:p.note||"",
+    qr_count:Number(p.qr_count||0),
+    check_count:Number(p.check_count||0),
+    unresolved_check_count:Number(p.unresolved_check_count||0),
+    high_priority_count:Number(p.high_priority_count||0),
+    overdue_count:Number(p.overdue_count||0)
+  };
+}
+
+function normalizeNote(n){
+  return{
+    id:n.id,
+    project_id:n.project_id,
+    note_type:n.note_type||"daily",
+    content:n.content||"",
+    created_at:n.created_at||"",
+    note_status:n.note_status||"todo",
+    note_author:n.note_author||"",
+    due_date:n.due_date||"",
+    note_priority:n.note_priority||"medium"
+  };
+}
+
+function render(){
+  renderMessage();
+  renderBoard();
+  renderDetail();
+  renderStats();
+  renderGlobalAlerts();
+}
+
+function renderMessage(){
+  if(state.loading){messageArea.innerHTML=`<div class="loading">読み込み中...</div>`;return;}
+  if(state.error){messageArea.innerHTML=`<div class="error">${escapeHtml(state.error)}</div>`;return;}
+  if(!state.projects.length){messageArea.innerHTML=`<div class="empty">案件がありません。新規案件を追加してください。</div>`;return;}
+  messageArea.innerHTML="";
+}
+
+function renderBoard(){
+  board.innerHTML="";
+  STATUSES.forEach(status=>{
+    const visible=getVisibleProjects().filter(p=>p.status===status.key);
+    const column=document.createElement("div");
+    column.className="column";
+    column.innerHTML=`<div class="column-head"><div class="column-title"><span class="dot" style="background:${status.color}"></span><span>${status.key}</span></div><div class="count">${visible.length}</div></div><div class="cards"></div>`;
+    const wrap=column.querySelector(".cards");
+    visible.forEach(project=>wrap.appendChild(renderCard(project)));
+    column.addEventListener("dragover",e=>{e.preventDefault();column.classList.add("drag-over");});
+    column.addEventListener("dragleave",()=>column.classList.remove("drag-over"));
+    column.addEventListener("drop",async e=>{
+      e.preventDefault();
+      column.classList.remove("drag-over");
+      const id=e.dataTransfer.getData("text/plain");
+      await moveProject(id,status.key);
+    });
+    board.appendChild(column);
+  });
+}
+
+function renderCard(project){
+  const delayed=isDelayed(project);
+  const badgeClass=delayed?"red":(project.priority.includes("完了")||project.priority.includes("順調")||project.priority.includes("準備")?"green":project.priority.includes("入金")?"blue":"orange");
+  const el=document.createElement("div");
+  el.className="card"+(state.selectedId===project.id?" active":"");
+  el.draggable=true;
+  el.innerHTML=`
+    <div class="card-top">
+      <h3>${escapeHtml(project.name)}</h3>
+      <span class="badge ${badgeClass}">${delayed?"遅延注意":escapeHtml(project.priority)}</span>
+    </div>
+    <div class="meta">
+      <span><span class="label-muted">顧客：</span>${escapeHtml(project.customer)}</span>
+      <span><span class="label-muted">現場：</span>${escapeHtml(project.address)}</span>
+      <span><span class="label-muted">担当：</span>${escapeHtml(project.manager)}</span>
+    </div>
+    <div class="progress">
+      <div class="row"><span>進捗</span><strong>${project.progress}%</strong></div>
+      <div class="bar"><i style="width:${project.progress}%"></i></div>
+    </div>
+    <div class="mini-tags">
+      <span class="mini-tag">図面 ${project.drawings}</span>
+      <span class="mini-tag">見積 ${project.estimates}</span>
+      <span class="mini-tag">写真 ${project.photos}</span>
+      <span class="mini-tag tag-gold">要確認 ${project.check_count}</span>
+      <span class="mini-tag tag-red">期限切れ ${project.overdue_count}</span>
+      <span class="mini-tag tag-blue">高優先 ${project.high_priority_count}</span>
+    </div>`;
+  el.addEventListener("click",async()=>{
+    state.selectedId=project.id;
+    await Promise.all([fetchFiles(project.id),fetchNotes(project.id)]);
+    render();
+  });
+  el.addEventListener("dragstart",e=>e.dataTransfer.setData("text/plain",project.id));
+  return el;
+}
+
+function renderDetail(){
+  const project=state.projects.find(p=>p.id===state.selectedId)||state.projects[0];
+  if(!project){
+    detailPanel.innerHTML=`<div class="hint">案件がありません</div>`;
+    return;
+  }
+
+  const files=state.filesByProject[project.id]||[];
+  const rawNotes=state.notesByProject[project.id]||[];
+  const notes=filterNotes(rawNotes);
+  const groupedNotes={
+    check:notes.filter(n=>n.note_type==="check"),
+    daily:notes.filter(n=>n.note_type==="daily"),
+    done:notes.filter(n=>n.note_type==="done")
+  };
+
+  const summary=getNoteSummary(rawNotes);
+
+  detailPanel.innerHTML=`
+  <div class="detail-head">
+    <div>
+      <h4>${escapeHtml(project.name)}</h4>
+      <div class="hint">選択中の案件詳細</div>
+    </div>
+    <span class="badge ${isDelayed(project)?'red':'orange'}">${isDelayed(project)?'遅延注意':escapeHtml(project.priority)}</span>
+  </div>
+
+  <div class="alert-strip">
+    <span class="alert-pill red">未対応 ${summary.todo}件</span>
+    <span class="alert-pill gold">高優先 ${summary.high}件</span>
+    <span class="alert-pill red">期限切れ ${summary.overdue}件</span>
+    <span class="alert-pill blue">今日期限 ${summary.today}件</span>
+  </div>
+
+  <div class="detail-grid">
+    <div class="detail-item"><div class="k">顧客</div><div class="v">${escapeHtml(project.customer)}</div></div>
+    <div class="detail-item"><div class="k">現場住所</div><div class="v">${escapeHtml(project.address)}</div></div>
+    <div class="detail-item"><div class="k">担当者</div><div class="v">${escapeHtml(project.manager)}</div></div>
+    <div class="detail-item"><div class="k">工期</div><div class="v">${formatDate(project.start)} ～ ${formatDate(project.end)}</div></div>
+    <div class="detail-item"><div class="k">進捗率</div><div class="v">${project.progress}%</div></div>
+    <div class="detail-item"><div class="k">QR</div><div class="v">${project.qr_count||0}件</div></div>
+  </div>
+
+  <div class="box">
+    <h5>図面・写真アップロード</h5>
+    <div class="upload-row">
+      <select id="uploadType">
+        <option value="drawing">図面</option>
+        <option value="photo">写真</option>
+        <option value="estimate">見積</option>
+      </select>
+      <input id="uploadFile" type="file">
+    </div>
+    <div class="detail-actions"><button class="gold-btn" id="uploadBtn" type="button">アップロード</button></div>
+  </div>
+
+  <div class="box">
+    <h5>保存ファイル</h5>
+    ${files.length?files.map(f=>`<div class="file-item"><div class="file-left"><div class="file-name">${escapeHtml(f.file_name||"untitled")}</div><div class="file-sub">${escapeHtml(f.file_type||"-")} ・ ${formatBytes(Number(f.file_size||0))}</div></div><div style="display:flex;gap:8px"><a class="small-btn" href="${escapeAttr(f.file_url||"#")}" target="_blank" rel="noopener noreferrer">開く</a><button class="danger-btn" data-file-id="${f.id}" type="button">削除</button></div></div>`).join(""):`<div class="file-sub">まだファイルはありません</div>`}
+  </div>
+
+  <div class="box">
+    <h5>ノート追加</h5>
+    <div class="note-form">
+      <select id="noteType"><option value="daily">今日の報告</option><option value="check">要確認</option><option value="done">完了報告</option></select>
+      <select id="noteStatus"><option value="todo">未対応</option><option value="doing">対応中</option><option value="done">対応済み</option></select>
+      <select id="notePriority"><option value="high">高</option><option value="medium" selected>中</option><option value="low">低</option></select>
+      <input id="noteAuthor" placeholder="担当者名">
+      <input id="noteDueDate" type="date">
+      <textarea id="noteContent" placeholder="ノート内容を入力"></textarea>
+    </div>
+    <div class="detail-actions"><button class="gold-btn" id="addNoteBtn" type="button">ノート追加</button></div>
+  </div>
+
+  <div class="box">
+    <h5>ノート絞り込み</h5>
+    <div class="note-tools">
+      <input id="noteSearch" placeholder="ノート検索" value="${escapeAttr(state.noteFilters.search)}">
+      <select id="noteFilterType">
+        <option value="all">全種別</option>
+        <option value="check" ${state.noteFilters.type==="check"?"selected":""}>要確認</option>
+        <option value="daily" ${state.noteFilters.type==="daily"?"selected":""}>今日の報告</option>
+        <option value="done" ${state.noteFilters.type==="done"?"selected":""}>完了報告</option>
+      </select>
+      <select id="noteFilterStatus">
+        <option value="all">全対応状況</option>
+        <option value="todo" ${state.noteFilters.status==="todo"?"selected":""}>未対応</option>
+        <option value="doing" ${state.noteFilters.status==="doing"?"selected":""}>対応中</option>
+        <option value="done" ${state.noteFilters.status==="done"?"selected":""}>対応済み</option>
+      </select>
+      <select id="noteFilterPriority">
+        <option value="all">全優先度</option>
+        <option value="high" ${state.noteFilters.priority==="high"?"selected":""}>高</option>
+        <option value="medium" ${state.noteFilters.priority==="medium"?"selected":""}>中</option>
+        <option value="low" ${state.noteFilters.priority==="low"?"selected":""}>低</option>
+      </select>
+      <input id="noteFilterAuthor" placeholder="担当者で絞り込み" value="${escapeAttr(state.noteFilters.author)}">
+      <select id="noteFilterDue">
+        <option value="all">全期限</option>
+        <option value="overdue" ${state.noteFilters.due==="overdue"?"selected":""}>期限切れ</option>
+        <option value="today" ${state.noteFilters.due==="today"?"selected":""}>今日期限</option>
+        <option value="tomorrow" ${state.noteFilters.due==="tomorrow"?"selected":""}>明日期限</option>
+        <option value="hasdue" ${state.noteFilters.due==="hasdue"?"selected":""}>期限あり</option>
+      </select>
+    </div>
+    <div class="detail-actions">
+      <button class="ghost-btn" id="applyNoteFiltersBtn" type="button">絞り込む</button>
+      <button class="ghost-btn" id="clearNoteFiltersBtn" type="button">クリア</button>
+    </div>
+  </div>
+
+  <div class="box">
+    <h5>ノート一覧</h5>
+    <div class="note-sections">
+      ${renderNoteSection("check", groupedNotes.check)}
+      ${renderNoteSection("daily", groupedNotes.daily)}
+      ${renderNoteSection("done", groupedNotes.done)}
+    </div>
+  </div>
+
+  <div class="detail-actions">
+    <button class="ghost-btn" id="refreshBtn" type="button">再読込</button>
+    <button class="ghost-btn" id="editProjectBtn" type="button">案件編集</button>
+    <button class="gold-btn" id="qrBtn" type="button">QRを発行</button>
+  </div>`;
+
   document.getElementById("refreshBtn").onclick=async()=>{await Promise.all([fetchFiles(project.id),fetchNotes(project.id)]);await fetchProjects();};
   document.getElementById("editProjectBtn").onclick=()=>openEditModal(project);
   document.getElementById("qrBtn").onclick=()=>createQr(project.id);
   document.getElementById("uploadBtn").onclick=()=>uploadFile(project.id);
   document.getElementById("addNoteBtn").onclick=()=>addNote(project.id);
-  document.getElementById("noteSearchInput").addEventListener("input",e=>{state.noteSearch=e.target.value.trim();renderDetail();});
-  document.getElementById("noteStatusFilter").addEventListener("change",e=>{state.noteStatusFilter=e.target.value;renderDetail();});
+  document.getElementById("applyNoteFiltersBtn").onclick=()=>applyNoteFilters();
+  document.getElementById("clearNoteFiltersBtn").onclick=()=>clearNoteFilters();
+
   detailPanel.querySelectorAll("[data-file-id]").forEach(btn=>btn.onclick=()=>deleteFile(btn.dataset.fileId,project.id));
   detailPanel.querySelectorAll("[data-note-id]").forEach(btn=>btn.onclick=()=>deleteNote(btn.dataset.noteId,project.id));
-  detailPanel.querySelectorAll("[data-note-edit-id]").forEach(btn=>btn.onclick=()=>openNoteEdit(btn.dataset.noteEditId,project.id));
-  detailPanel.querySelectorAll("[data-note-filter]").forEach(btn=>btn.onclick=()=>{state.noteTypeFilter=btn.dataset.noteFilter;renderDetail();});
-  detailPanel.querySelectorAll("[data-note-status-set]").forEach(btn=>btn.onclick=()=>updateNoteStatus(btn.dataset.noteStatusSet,project.id,btn.dataset.statusValue));
+  detailPanel.querySelectorAll("[data-note-edit-id]").forEach(btn=>btn.onclick=()=>openNoteEditModal(btn.dataset.noteEditId, project.id));
+  detailPanel.querySelectorAll("[data-note-status-toggle]").forEach(btn=>btn.onclick=()=>quickToggleStatus(btn.dataset.noteStatusToggle,project.id));
 }
-function renderNoteItem(n){return `<div class="note-item"><div class="note-left"><div class="note-title"><span class="note-pill ${escapeHtml(n.note_type||'daily')}">${escapeHtml(NOTE_TYPES[n.note_type]||'今日の報告')}</span></div><div class="note-meta"><span class="status-pill ${escapeHtml(n.note_status||'todo')}">${escapeHtml(NOTE_STATUSES[n.note_status]||'未対応')}</span>${n.note_author?`<span class="note-author">担当: ${escapeHtml(n.note_author)}</span>`:''}<span class="note-author">${formatDateTime(n.created_at||"")}</span></div><div class="note-sub">${escapeHtml(n.content||"")}</div><div class="quick-statuses"><button class="quick-status-btn ${n.note_status==='todo'?'active':''}" data-note-status-set="${n.id}" data-status-value="todo" type="button">未対応</button><button class="quick-status-btn ${n.note_status==='doing'?'active':''}" data-note-status-set="${n.id}" data-status-value="doing" type="button">対応中</button><button class="quick-status-btn ${n.note_status==='done'?'active':''}" data-note-status-set="${n.id}" data-status-value="done" type="button">対応済み</button></div></div><div class="note-edit-actions"><button class="small-btn" data-note-edit-id="${n.id}" type="button">編集</button><button class="danger-btn" data-note-id="${n.id}" type="button">削除</button></div></div>`;}
-function renderStats(){const visible=getVisibleProjects(),total=state.projects.length,inProgress=state.projects.filter(p=>p.status==="施工中").length,delayed=state.projects.filter(isDelayed).length,thisWeek=state.projects.filter(isThisWeekEnd).length,qrTotal=state.projects.reduce((a,p)=>a+(p.qr_count||0),0),urgentChecks=state.projects.reduce((a,p)=>a+(p.unresolved_check_count||0),0);document.getElementById("statTotal").textContent=total;document.getElementById("statTotalSub").textContent=`表示中 ${visible.length}件`;document.getElementById("statInProgress").textContent=inProgress;document.getElementById("statInProgressSub").textContent=`今日の稼働 ${inProgress}件`;document.getElementById("statThisWeek").textContent=thisWeek;document.querySelector('.stats .stat:nth-child(3) .sub').textContent=`要確認 ${urgentChecks}件`;document.getElementById("statDelayed").textContent=delayed;document.getElementById("usageProjects").textContent=`${Math.min(total,5)}/5`;document.getElementById("usageQr").textContent=`${Math.min(qrTotal,1)}/1`;document.getElementById("usageDelay").textContent=`遅延 ${delayed}件`;const banner=document.querySelector('.main-shell > div:nth-child(2)');const existing=document.getElementById('urgentBanner');if(existing)existing.remove();if(urgentChecks){const el=document.createElement('div');el.id='urgentBanner';el.className='urgent-banner';el.innerHTML=`<div><strong>要確認の未対応が残っています</strong><div class="integration-note">案件カードと右パネルで優先表示されています。</div></div><div class="urgent-count"><span class="alert-dot"></span>${urgentChecks}件</div>`;banner.prepend(el);}}
-function getVisibleProjects(){return state.projects.filter(p=>{const q=state.search.toLowerCase();const hit=!q||[p.name,p.customer,p.address,p.manager].join(" ").toLowerCase().includes(q);const filterHit=state.filter==="all"?true:state.filter==="priority"?(p.priority.includes("遅延")||p.priority.includes("資材")||p.priority.includes("見積")||p.priority.includes("新規")||p.unresolved_check_count>0):state.filter==="delay"?isDelayed(p):state.filter==="thisweek"?isThisWeekEnd(p):true;return hit&&filterHit;});}
-function sortNotes(notes){return [...notes].sort((a,b)=>{const wa=getNotePriorityWeight(a),wb=getNotePriorityWeight(b);if(wa!==wb)return wa-wb;return String(b.created_at||"").localeCompare(String(a.created_at||""));});}
-function getNotePriorityWeight(n){if(n.note_type==='check'&&n.note_status==='todo')return 0;if(n.note_type==='check'&&n.note_status==='doing')return 1;if(n.note_status==='todo')return 2;if(n.note_status==='doing')return 3;return 4;}
-function getNoteCounts(notes){return{all:notes.length,check:notes.filter(n=>n.note_type==='check').length,todo:notes.filter(n=>n.note_status==='todo').length,withAuthor:notes.filter(n=>n.note_author).length,todoCheck:notes.filter(n=>n.note_type==='check'&&n.note_status==='todo').length};}
-function getVisibleNotes(notes){const q=state.noteSearch.toLowerCase();return notes.filter(n=>{const hit=!q||[n.content||'',n.note_author||''].join(' ').toLowerCase().includes(q);const typeHit=state.noteTypeFilter==='all'?true:state.noteTypeFilter==='check'?n.note_type==='check':state.noteTypeFilter==='todo'?n.note_status==='todo':state.noteTypeFilter==='mine'?Boolean((n.note_author||'').trim()):true;const statusHit=state.noteStatusFilter==='all'?true:n.note_status===state.noteStatusFilter;return hit&&typeHit&&statusHit;});}
-async function moveProject(id,status){const project=state.projects.find(p=>p.id===id);if(!project)return;let nextProgress=project.progress;if(status==="完了")nextProgress=100;if(status==="施工中"&&nextProgress<70)nextProgress=70;if(status==="着工前"&&nextProgress>69)nextProgress=60;const prev={status:project.status,progress:project.progress};project.status=status;project.progress=nextProgress;render();try{await api("/api/kanban/move",{method:"POST",body:JSON.stringify({id,status,progress:nextProgress})});await fetchProjects();}catch(e){project.status=prev.status;project.progress=prev.progress;state.error=e.message||"API error";render();}}
-async function createProject(){const payload={user_id:CONFIG.USER_ID,name:document.getElementById("cName").value.trim(),customer_name:document.getElementById("cCustomer").value.trim(),manager:document.getElementById("cManager").value.trim(),address:document.getElementById("cAddress").value.trim(),status:document.getElementById("cStatus").value,progress:Number(document.getElementById("cProgress").value||0),start_date:document.getElementById("cStart").value,end_date:document.getElementById("cEnd").value,note:document.getElementById("cNote").value.trim(),priority:"新規追加"};if(!payload.name||!payload.customer_name||!payload.address){alert("案件名・顧客名・現場住所は必須です。");return;}try{await api("/api/projects",{method:"POST",body:JSON.stringify(payload)});closeModal("createModal");clearCreateForm();await fetchProjects();}catch(e){alert(e.message||"案件追加に失敗しました");}}
-function openEditModal(project){document.getElementById("eName").value=project.name||"";document.getElementById("eCustomer").value=project.customer||"";document.getElementById("eManager").value=project.manager||"";document.getElementById("eAddress").value=project.address||"";document.getElementById("eStatus").value=project.status||"見積中";document.getElementById("eProgress").value=project.progress||0;document.getElementById("eStart").value=project.start||"";document.getElementById("eEnd").value=project.end||"";document.getElementById("eNote").value=project.note||"";openModal("editModal");}
-async function updateProject(){const project=state.projects.find(p=>p.id===state.selectedId);if(!project)return;const payload={name:document.getElementById("eName").value.trim(),customer_name:document.getElementById("eCustomer").value.trim(),manager:document.getElementById("eManager").value.trim(),address:document.getElementById("eAddress").value.trim(),status:document.getElementById("eStatus").value,progress:Number(document.getElementById("eProgress").value||0),start_date:document.getElementById("eStart").value,end_date:document.getElementById("eEnd").value,note:document.getElementById("eNote").value.trim()};try{await api(`/api/projects/${project.id}`,{method:"PUT",body:JSON.stringify(payload)});closeModal("editModal");await fetchProjects();}catch(e){alert(e.message||"案件更新に失敗しました");}}
-async function deleteProject(){const project=state.projects.find(p=>p.id===state.selectedId);if(!project)return;if(!confirm("この案件を削除しますか？"))return;try{await api(`/api/projects/${project.id}`,{method:"DELETE"});closeModal("editModal");await fetchProjects();}catch(e){alert(e.message||"案件削除に失敗しました");}}
-async function addNote(projectId){const type=document.getElementById("noteType").value;const status=document.getElementById("noteStatus").value;const author=document.getElementById("noteAuthor").value.trim();const content=document.getElementById("noteContent").value.trim();if(!content){alert("ノート内容を入力してください");return;}try{await api("/api/notes",{method:"POST",body:JSON.stringify({project_id:projectId,note_type:type,note_status:status,note_author:author,content})});document.getElementById("noteContent").value="";document.getElementById("noteAuthor").value="";document.getElementById("noteStatus").value= type==='done' ? 'done' : 'todo';await fetchNotes(projectId);await fetchProjects();render();}catch(e){alert(e.message||"ノート追加に失敗しました");}}
-function openNoteEdit(noteId,projectId){const notes=state.notesByProject[projectId]||[];const note=notes.find(n=>n.id===noteId);if(!note)return;state.editingNoteId=noteId;state.editingProjectId=projectId;document.getElementById('nEditType').value=note.note_type||'daily';document.getElementById('nEditStatus').value=note.note_status||'todo';document.getElementById('nEditAuthor').value=note.note_author||'';document.getElementById('nEditContent').value=note.content||'';openModal('noteEditModal');}
-async function saveNoteEdit(){if(!state.editingNoteId||!state.editingProjectId)return;const payload={note_type:document.getElementById('nEditType').value,note_status:document.getElementById('nEditStatus').value,note_author:document.getElementById('nEditAuthor').value.trim(),content:document.getElementById('nEditContent').value.trim()};if(!payload.content){alert('ノート内容を入力してください');return;}try{await api(`/api/notes/${state.editingNoteId}`,{method:'PUT',body:JSON.stringify(payload)});closeModal('noteEditModal');await fetchNotes(state.editingProjectId);await fetchProjects();render();}catch(e){alert(e.message||'ノート更新に失敗しました');}}
-async function updateNoteStatus(noteId,projectId,status){try{await api(`/api/notes/${noteId}`,{method:'PUT',body:JSON.stringify({note_status:status})});await fetchNotes(projectId);await fetchProjects();renderDetail();renderBoard();renderStats();}catch(e){alert(e.message||'ステータス更新に失敗しました');}}
-async function deleteNote(noteId,projectId){if(!confirm("このノートを削除しますか？"))return;try{await api(`/api/notes/${noteId}`,{method:"DELETE"});await fetchNotes(projectId);await fetchProjects();render();}catch(e){alert(e.message||"ノート削除に失敗しました");}}
-async function deleteFile(fileId,projectId){if(!confirm("このファイルを削除しますか？"))return;try{await api(`/api/files/${fileId}`,{method:"DELETE"});await fetchFiles(projectId);await fetchProjects();render();}catch(e){alert(e.message||"ファイル削除に失敗しました");}}
-async function createQr(projectId){try{const data=await api("/api/qr",{method:"POST",body:JSON.stringify({project_id:projectId,user_id:CONFIG.USER_ID})});alert(`QR発行完了: ${data.qr.url}`);await fetchProjects();}catch(e){alert(e.message||"QR発行に失敗しました");}}
-async function uploadFile(projectId){const input=document.getElementById("uploadFile"),select=document.getElementById("uploadType");if(!input.files||!input.files[0]){alert("ファイルを選択してください");return;}const formData=new FormData();formData.append("file",input.files[0]);formData.append("project_id",projectId);formData.append("user_id",CONFIG.USER_ID);formData.append("file_type",select.value);try{const data=await fetch(`${CONFIG.API_BASE}/api/upload`,{method:"POST",body:formData}).then(async res=>{const json=await res.json().catch(()=>({}));if(!res.ok||json.ok===false)throw new Error(json.message||json.error||"UPLOAD_ERROR");return json;});alert(`アップロード完了: ${data.file.file_name}`);input.value="";await fetchFiles(projectId);await fetchProjects();render();}catch(e){alert(e.message||"アップロードに失敗しました");}}
+
+function renderNoteSection(type, notes){
+  return `<div class="note-section">
+    <div class="note-section-head">
+      <h6><span class="note-pill ${type}">${escapeHtml(NOTE_TYPES[type])}</span></h6>
+      <div class="note-section-count">${notes.length}件</div>
+    </div>
+    ${notes.length?notes.map(n=>`
+      <div class="note-item">
+        <div class="note-left">
+          <div class="note-header-row">
+            <span class="status-pill ${escapeHtml(n.note_status)}">${escapeHtml(NOTE_STATUS[n.note_status]||"未対応")}</span>
+            <span class="priority-pill ${escapeHtml(n.note_priority)}">${escapeHtml(NOTE_PRIORITY[n.note_priority]||"中")}</span>
+            ${n.note_author?`<span class="mini-tag">${escapeHtml(n.note_author)}</span>`:""}
+            ${n.due_date?`<span class="mini-tag ${isOverdueDate(n.due_date,n.note_status)?'tag-red':''}">期限 ${escapeHtml(formatDate(n.due_date))}</span>`:""}
+          </div>
+          <div class="note-sub">${escapeHtml(n.content||"")}</div>
+          <div class="note-sub">${formatDateTime(n.created_at||"")}</div>
+        </div>
+        <div class="note-edit-actions">
+          <button class="small-btn" data-note-status-toggle="${n.id}" type="button">状態切替</button>
+          <button class="small-btn" data-note-edit-id="${n.id}" type="button">編集</button>
+          <button class="danger-btn" data-note-id="${n.id}" type="button">削除</button>
+        </div>
+      </div>
+    `).join(""):`<div class="file-sub">まだありません</div>`}
+  </div>`;
+}
+
+function renderStats(){
+  const visible=getVisibleProjects(),
+    total=state.projects.length,
+    inProgress=state.projects.filter(p=>p.status==="施工中").length,
+    delayed=state.projects.filter(isDelayed).length,
+    thisWeek=state.projects.filter(isThisWeekEnd).length,
+    qrTotal=state.projects.reduce((a,p)=>a+(p.qr_count||0),0);
+
+  document.getElementById("statTotal").textContent=total;
+  document.getElementById("statTotalSub").textContent=`表示中 ${visible.length}件`;
+  document.getElementById("statInProgress").textContent=inProgress;
+  document.getElementById("statInProgressSub").textContent=`今日の稼働 ${inProgress}件`;
+  document.getElementById("statThisWeek").textContent=thisWeek;
+  document.getElementById("statDelayed").textContent=delayed;
+  document.getElementById("usageProjects").textContent=`${Math.min(total,5)}/5`;
+  document.getElementById("usageQr").textContent=`${Math.min(qrTotal,1)}/1`;
+  document.getElementById("usageDelay").textContent=`遅延 ${delayed}件`;
+}
+
+function renderGlobalAlerts(){
+  const notes=Object.values(state.notesByProject).flat();
+  const summary=getNoteSummary(notes);
+  document.getElementById("globalAlertStrip").innerHTML=`
+    <span class="alert-pill red">未対応 ${summary.todo}件</span>
+    <span class="alert-pill gold">高優先 ${summary.high}件</span>
+    <span class="alert-pill red">期限切れ ${summary.overdue}件</span>
+    <span class="alert-pill blue">今日期限 ${summary.today}件</span>
+    <span class="alert-pill blue">明日期限 ${summary.tomorrow}件</span>
+  `;
+}
+
+function getVisibleProjects(){
+  return state.projects.filter(p=>{
+    const q=state.search.toLowerCase();
+    const hit=!q||[p.name,p.customer,p.address,p.manager].join(" ").toLowerCase().includes(q);
+    const filterHit=state.filter==="all"?true:
+      state.filter==="priority"?(p.priority.includes("遅延")||p.priority.includes("資材")||p.priority.includes("見積")||p.priority.includes("新規")||p.high_priority_count>0):
+      state.filter==="delay"?isDelayed(p)||p.overdue_count>0:
+      state.filter==="thisweek"?isThisWeekEnd(p):
+      true;
+    return hit&&filterHit;
+  });
+}
+
+function filterNotes(notes){
+  return notes.filter(n=>{
+    const f=state.noteFilters;
+    const textOk=!f.search || `${n.content} ${n.note_author}`.toLowerCase().includes(f.search.toLowerCase());
+    const typeOk=f.type==="all" || n.note_type===f.type;
+    const statusOk=f.status==="all" || n.note_status===f.status;
+    const priorityOk=f.priority==="all" || n.note_priority===f.priority;
+    const authorOk=!f.author || (n.note_author||"").toLowerCase().includes(f.author.toLowerCase());
+    const dueOk=matchDueFilter(n, f.due);
+    return textOk && typeOk && statusOk && priorityOk && authorOk && dueOk;
+  });
+}
+
+function matchDueFilter(note, filter){
+  if(filter==="all") return true;
+  if(filter==="hasdue") return !!note.due_date;
+  if(!note.due_date) return false;
+  const due=normalizeDateOnly(note.due_date);
+  const today=normalizeDateOnly(new Date());
+  const tomorrow=new Date(today); tomorrow.setDate(today.getDate()+1);
+  if(filter==="overdue") return due < today && note.note_status!=="done";
+  if(filter==="today") return due.getTime()===today.getTime();
+  if(filter==="tomorrow") return due.getTime()===tomorrow.getTime();
+  return true;
+}
+
+function getNoteSummary(notes){
+  return {
+    todo:notes.filter(n=>(n.note_status||"todo")==="todo").length,
+    high:notes.filter(n=>(n.note_priority||"medium")==="high").length,
+    overdue:notes.filter(n=>isOverdueDate(n.due_date,n.note_status)).length,
+    today:notes.filter(n=>isTodayDate(n.due_date)).length,
+    tomorrow:notes.filter(n=>isTomorrowDate(n.due_date)).length
+  };
+}
+
+function applyNoteFilters(){
+  state.noteFilters={
+    search:document.getElementById("noteSearch").value.trim(),
+    type:document.getElementById("noteFilterType").value,
+    status:document.getElementById("noteFilterStatus").value,
+    priority:document.getElementById("noteFilterPriority").value,
+    author:document.getElementById("noteFilterAuthor").value.trim(),
+    due:document.getElementById("noteFilterDue").value
+  };
+  renderDetail();
+}
+
+function clearNoteFilters(){
+  state.noteFilters={search:"",type:"all",status:"all",priority:"all",author:"",due:"all"};
+  renderDetail();
+}
+
+async function moveProject(id,status){
+  const project=state.projects.find(p=>p.id===id);
+  if(!project)return;
+  let nextProgress=project.progress;
+  if(status==="完了")nextProgress=100;
+  if(status==="施工中"&&nextProgress<70)nextProgress=70;
+  if(status==="着工前"&&nextProgress>69)nextProgress=60;
+
+  const prev={status:project.status,progress:project.progress};
+  project.status=status;
+  project.progress=nextProgress;
+  render();
+
+  try{
+    await api("/api/kanban/move",{method:"POST",body:JSON.stringify({id,status,progress:nextProgress})});
+    await fetchProjects();
+  }catch(e){
+    project.status=prev.status;
+    project.progress=prev.progress;
+    state.error=e.message||"API error";
+    render();
+  }
+}
+
+async function createProject(){
+  const payload={
+    user_id:CONFIG.USER_ID,
+    name:document.getElementById("cName").value.trim(),
+    customer_name:document.getElementById("cCustomer").value.trim(),
+    manager:document.getElementById("cManager").value.trim(),
+    address:document.getElementById("cAddress").value.trim(),
+    status:document.getElementById("cStatus").value,
+    progress:Number(document.getElementById("cProgress").value||0),
+    start_date:document.getElementById("cStart").value,
+    end_date:document.getElementById("cEnd").value,
+    note:document.getElementById("cNote").value.trim(),
+    priority:"新規追加"
+  };
+  if(!payload.name||!payload.customer_name||!payload.address){alert("案件名・顧客名・現場住所は必須です。");return;}
+  try{
+    await api("/api/projects",{method:"POST",body:JSON.stringify(payload)});
+    closeModal("createModal");
+    clearCreateForm();
+    await fetchProjects();
+  }catch(e){alert(e.message||"案件追加に失敗しました");}
+}
+
+function openEditModal(project){
+  document.getElementById("eName").value=project.name||"";
+  document.getElementById("eCustomer").value=project.customer||"";
+  document.getElementById("eManager").value=project.manager||"";
+  document.getElementById("eAddress").value=project.address||"";
+  document.getElementById("eStatus").value=project.status||"見積中";
+  document.getElementById("eProgress").value=project.progress||0;
+  document.getElementById("eStart").value=project.start||"";
+  document.getElementById("eEnd").value=project.end||"";
+  document.getElementById("eNote").value=project.note||"";
+  openModal("editModal");
+}
+
+async function updateProject(){
+  const project=state.projects.find(p=>p.id===state.selectedId);
+  if(!project)return;
+  const payload={
+    name:document.getElementById("eName").value.trim(),
+    customer_name:document.getElementById("eCustomer").value.trim(),
+    manager:document.getElementById("eManager").value.trim(),
+    address:document.getElementById("eAddress").value.trim(),
+    status:document.getElementById("eStatus").value,
+    progress:Number(document.getElementById("eProgress").value||0),
+    start_date:document.getElementById("eStart").value,
+    end_date:document.getElementById("eEnd").value,
+    note:document.getElementById("eNote").value.trim()
+  };
+  try{
+    await api(`/api/projects/${project.id}`,{method:"PUT",body:JSON.stringify(payload)});
+    closeModal("editModal");
+    await fetchProjects();
+  }catch(e){alert(e.message||"案件更新に失敗しました");}
+}
+
+async function deleteProject(){
+  const project=state.projects.find(p=>p.id===state.selectedId);
+  if(!project)return;
+  if(!confirm("この案件を削除しますか？"))return;
+  try{
+    await api(`/api/projects/${project.id}`,{method:"DELETE"});
+    closeModal("editModal");
+    await fetchProjects();
+  }catch(e){alert(e.message||"案件削除に失敗しました");}
+}
+
+async function addNote(projectId){
+  const type=document.getElementById("noteType").value;
+  const status=document.getElementById("noteStatus").value;
+  const priority=document.getElementById("notePriority").value;
+  const author=document.getElementById("noteAuthor").value.trim();
+  const dueDate=document.getElementById("noteDueDate").value;
+  const content=document.getElementById("noteContent").value.trim();
+  if(!content){alert("ノート内容を入力してください");return;}
+  try{
+    await api("/api/notes",{method:"POST",body:JSON.stringify({
+      project_id:projectId,
+      note_type:type,
+      note_status:status,
+      note_author:author,
+      due_date:dueDate,
+      note_priority:priority,
+      content
+    })});
+    ["noteAuthor","noteDueDate","noteContent"].forEach(id=>document.getElementById(id).value="");
+    document.getElementById("noteStatus").value="todo";
+    document.getElementById("notePriority").value="medium";
+    document.getElementById("noteType").value="daily";
+    await fetchNotes(projectId);
+    await fetchProjects();
+    render();
+  }catch(e){alert(e.message||"ノート追加に失敗しました");}
+}
+
+function openNoteEditModal(noteId,projectId){
+  const notes=state.notesByProject[projectId]||[];
+  const note=notes.find(n=>n.id===noteId);
+  if(!note)return;
+  state.activeNoteEditId=noteId;
+  document.getElementById("neType").value=note.note_type||"daily";
+  document.getElementById("neStatus").value=note.note_status||"todo";
+  document.getElementById("nePriority").value=note.note_priority||"medium";
+  document.getElementById("neDueDate").value=note.due_date||"";
+  document.getElementById("neAuthor").value=note.note_author||"";
+  document.getElementById("neContent").value=note.content||"";
+  openModal("noteEditModal");
+}
+
+async function saveNoteEdit(){
+  const projectId=state.selectedId;
+  const noteId=state.activeNoteEditId;
+  if(!projectId||!noteId)return;
+  const payload={
+    note_type:document.getElementById("neType").value,
+    note_status:document.getElementById("neStatus").value,
+    note_priority:document.getElementById("nePriority").value,
+    due_date:document.getElementById("neDueDate").value,
+    note_author:document.getElementById("neAuthor").value.trim(),
+    content:document.getElementById("neContent").value.trim()
+  };
+  if(!payload.content){alert("ノート内容を入力してください");return;}
+  try{
+    await api(`/api/notes/${noteId}`,{method:"PUT",body:JSON.stringify(payload)});
+    closeModal("noteEditModal");
+    state.activeNoteEditId=null;
+    await fetchNotes(projectId);
+    await fetchProjects();
+    render();
+  }catch(e){alert(e.message||"ノート更新に失敗しました");}
+}
+
+async function quickToggleStatus(noteId,projectId){
+  const notes=state.notesByProject[projectId]||[];
+  const note=notes.find(n=>n.id===noteId);
+  if(!note)return;
+  const next=note.note_status==="todo"?"doing":note.note_status==="doing"?"done":"todo";
+  try{
+    await api(`/api/notes/${noteId}`,{method:"PUT",body:JSON.stringify({note_status:next})});
+    await fetchNotes(projectId);
+    await fetchProjects();
+    render();
+  }catch(e){alert(e.message||"状態更新に失敗しました");}
+}
+
+async function deleteNote(noteId,projectId){
+  if(!confirm("このノートを削除しますか？"))return;
+  try{
+    await api(`/api/notes/${noteId}`,{method:"DELETE"});
+    await fetchNotes(projectId);
+    await fetchProjects();
+    render();
+  }catch(e){alert(e.message||"ノート削除に失敗しました");}
+}
+
+async function deleteFile(fileId,projectId){
+  if(!confirm("このファイルを削除しますか？"))return;
+  try{
+    await api(`/api/files/${fileId}`,{method:"DELETE"});
+    await fetchFiles(projectId);
+    await fetchProjects();
+    render();
+  }catch(e){alert(e.message||"ファイル削除に失敗しました");}
+}
+
+async function createQr(projectId){
+  try{
+    const data=await api("/api/qr",{method:"POST",body:JSON.stringify({project_id:projectId,user_id:CONFIG.USER_ID})});
+    alert(`QR発行完了: ${data.qr.url}`);
+    await fetchProjects();
+  }catch(e){alert(e.message||"QR発行に失敗しました");}
+}
+
+async function uploadFile(projectId){
+  const input=document.getElementById("uploadFile"),select=document.getElementById("uploadType");
+  if(!input.files||!input.files[0]){alert("ファイルを選択してください");return;}
+  const formData=new FormData();
+  formData.append("file",input.files[0]);
+  formData.append("project_id",projectId);
+  formData.append("user_id",CONFIG.USER_ID);
+  formData.append("file_type",select.value);
+
+  try{
+    const data=await fetch(`${CONFIG.API_BASE}/api/upload`,{method:"POST",body:formData}).then(async res=>{
+      const json=await res.json().catch(()=>({}));
+      if(!res.ok||json.ok===false)throw new Error(json.message||json.error||"UPLOAD_ERROR");
+      return json;
+    });
+    alert(`アップロード完了: ${data.file.file_name}`);
+    input.value="";
+    await fetchFiles(projectId);
+    await fetchProjects();
+    render();
+  }catch(e){alert(e.message||"アップロードに失敗しました");}
+}
+
 function openModal(id){document.getElementById(id).classList.add("show");}
-function closeModal(id){document.getElementById(id).classList.remove("show");if(id==='noteEditModal'){state.editingNoteId=null;state.editingProjectId=null;}}
-function clearCreateForm(){["cName","cCustomer","cManager","cAddress","cNote","cStart","cEnd"].forEach(id=>document.getElementById(id).value="");document.getElementById("cProgress").value="20";document.getElementById("cStatus").value="見積中";}
-async function api(path,options={}){const res=await fetch(`${CONFIG.API_BASE}${path}`,{headers:{"Content-Type":"application/json"},...options});const data=await res.json().catch(()=>({}));if(!res.ok||data.ok===false)throw new Error(data.message||data.error||"API error");return data;}
-function isDelayed(p){if(!p.end||p.status==="完了")return false;const t=new Date();t.setHours(0,0,0,0);const e=new Date(p.end+"T00:00:00");return e<t;}
-function isThisWeekEnd(p){if(!p.end)return false;const t=new Date();t.setHours(0,0,0,0);const e=new Date(p.end+"T00:00:00");const d=(e-t)/86400000;return d>=0&&d<=7;}
-function formatDate(s){return s?s.replaceAll("-","/"):"-";}
+function closeModal(id){document.getElementById(id).classList.remove("show");}
+function clearCreateForm(){
+  ["cName","cCustomer","cManager","cAddress","cNote","cStart","cEnd"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("cProgress").value="20";
+  document.getElementById("cStatus").value="見積中";
+}
+
+async function api(path,options={}){
+  const headers={"Content-Type":"application/json",...(options.headers||{})};
+  const res=await fetch(`${CONFIG.API_BASE}${path}`,{...options,headers});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok||data.ok===false)throw new Error(data.message||data.error||"API error");
+  return data;
+}
+
+function isDelayed(p){
+  if(!p.end||p.status==="完了")return false;
+  const t=new Date();t.setHours(0,0,0,0);
+  const e=new Date(p.end+"T00:00:00");
+  return e<t;
+}
+function isThisWeekEnd(p){
+  if(!p.end)return false;
+  const t=new Date();t.setHours(0,0,0,0);
+  const e=new Date(p.end+"T00:00:00");
+  const d=(e-t)/86400000;
+  return d>=0&&d<=7;
+}
+function normalizeDateOnly(val){
+  const d=val instanceof Date?new Date(val):new Date(String(val)+"T00:00:00");
+  d.setHours(0,0,0,0);
+  return d;
+}
+function isOverdueDate(dateStr,status){
+  if(!dateStr || status==="done") return false;
+  return normalizeDateOnly(dateStr) < normalizeDateOnly(new Date());
+}
+function isTodayDate(dateStr){
+  if(!dateStr) return false;
+  return normalizeDateOnly(dateStr).getTime()===normalizeDateOnly(new Date()).getTime();
+}
+function isTomorrowDate(dateStr){
+  if(!dateStr) return false;
+  const t=normalizeDateOnly(new Date());
+  t.setDate(t.getDate()+1);
+  return normalizeDateOnly(dateStr).getTime()===t.getTime();
+}
+function formatDate(s){return s?String(s).replaceAll("-","/"):"-";}
 function formatDateTime(s){return s?String(s).slice(0,16).replace("T"," "):"-";}
-function formatBytes(bytes){if(!bytes)return"0 B";const units=["B","KB","MB","GB"];let i=0,n=bytes;while(n>=1024&&i<units.length-1){n/=1024;i++;}return `${n.toFixed(n>=10||i===0?0:1)} ${units[i]}`;}
+function formatBytes(bytes){
+  if(!bytes)return"0 B";
+  const units=["B","KB","MB","GB"];
+  let i=0,n=bytes;
+  while(n>=1024&&i<units.length-1){n/=1024;i++;}
+  return `${n.toFixed(n>=10||i===0?0:1)} ${units[i]}`;
+}
 function escapeHtml(str){return String(str).replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));}
 function escapeAttr(str){return escapeHtml(str);}
-
 </script>
 </body>
 </html>
